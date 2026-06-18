@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#3B82C4" id="themeColor">
+<title>Transfer</title>
+<script src="js/theme-init.js"></script>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/transfer.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+    
+    <div class="header">
+      <h2>Transfer Antar Dompet</h2>
+      <p>Pindahkan saldo antar dompet</p>
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <label for="sumberAsal">Dari Dompet</label>
+    <select id="sumberAsal">
+            <option value="">-- pilih dompet --</option>
+    </select>
+
+    <label for="sumberTujuan">Ke Dompet</label>
+    <select id="sumberTujuan">
+            <option value="">-- pilih dompet --</option>
+    </select>
+
+    <label for="nominal">Nominal</label>
+    <input
+      type="text"
+      id="nominal"
+      inputmode="numeric"
+      placeholder="Rp 0"
+    >
+
+    <label for="biayaAdmin">Biaya Admin</label>
+    <input
+      type="text"
+      id="biayaAdmin"
+      inputmode="numeric"
+      placeholder="Rp 0"
+    >
+
+    <label for="catatan">Catatan</label>
+    <textarea
+      id="catatan"
+      placeholder="Catatan transfer"
+    ></textarea>
+
+    <p id="status"></p>
+
+    <button
+      id="btnSimpan"
+      class="primaryBtn"
+      onclick="simpanTransfer()"
+    >
+      Transfer
+    </button>
+
+    <button
+      class="btnBack"
+    >
+      Kembali
+    </button>
+
+  </div>
+
+</div>
+
+<footer id="footer">
+© 2026 Catet-In by mbayusubagja
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/transfer.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+select,
+input,
+textarea{
+  width:100%;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  margin-top:8px;
+  margin-bottom:16px;
+  font-size:15px;
+  background:white;
+}
+
+textarea{
+  min-height:90px;
+  resize:none;
+}
+
+label{
+  font-size:14px;
+  font-weight:600;
+}
+
+.primaryBtn{
+  width:100%;
+  border:none;
+  background:var(--button);
+  color:white;
+  padding:12px;
+  border-radius:8px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.primaryBtn:hover{
+  opacity:0.92;
+}
+
+.card {
+  margin-bottom: 20px;
+}
+
+.btnBack{
+background:#C75B5B;
+color:white;
+border:none;
+padding:12px;
+border-radius:8px;
+width:100%;
+font-weight:600;
+cursor:pointer;
+}

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#3B82C4" id="themeColor">
+<title>Kredit</title>
+<script src="js/theme-init.js"></script>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/button.css">
+<link rel="stylesheet" href="css/navigasi.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="modalDetailKredit" class="modal">
+  <div class="modalContent">
+    <h3>Detail Pembayaran Kredit</h3>
+
+    <div id="detailKreditBody"></div>
+
+    <button onclick="tutupModalDetail()">
+      Tutup
+    </button>
+  </div>
+</div>
+
+<div id="modalBayar" class="modal-kredit hidden">
+
+  <div class="modal-content-kredit">
+
+    <h3>Bayar Kredit</h3>
+
+    <label>Dompet</label>
+    <select id="dompetBayar">
+    </select>
+
+    <label>Nominal</label>
+    <input
+      type="text"
+      id="nominalBayar"
+      placeholder="Masukkan nominal"
+      inputmode="numeric"
+    />
+
+    <button onclick="submitBayarKredit()" id="bayarKredit">
+      Bayar
+    </button>
+
+    <button onclick="closeBayarKredit()">
+      Batal
+    </button>
+
+  </div>
+
+</div>
+
+<div id="modalEditKredit" class="modal hidden">
+
+  <div class="modalContent">
+
+    <h3>Edit Total Kredit</h3>
+
+    <input
+      id="editNominalKredit"
+      placeholder="Total Kredit Baru"
+      inputmode="numeric"
+      type="text"
+    >
+
+    <div class="modalAction">
+
+      <button onclick="closeEditKredit()">
+        Batal
+      </button>
+
+      <button onclick="simpanEditKredit()" id="btnSimpanEdit">
+        Simpan
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div id="modalKredit" class="modal">
+
+  <div class="modalContent">
+
+    <h3>Tambah Kredit</h3>
+
+    <label for="namaKredit">Nama Kredit</label>
+    <input
+      type="text"
+      id="namaKredit"
+      placeholder="Nama kredit"
+    >
+
+    <label for="jenisKredit">Jenis Kredit</label>
+    <select id="jenisKredit">
+
+      <option value="Pinjaman">
+        Pinjaman
+      </option>
+
+      <option value="Barang">
+        Barang
+      </option>
+
+    </select>
+
+    <label for="nominalKredit">Nominal Kredit</label>
+    <input id="nominalKredit" type="text" inputmode="numeric" placeholder="0">
+
+    <div id="pinjamanGroup">
+      <label for="nominalPinjaman">Nominal Pinjaman</label>
+      <input
+        id="nominalPinjaman"
+        type="text"
+        inputmode="numeric"
+        placeholder="0"
+      >
+
+      <label for="sumberTujuan">Ke Dompet</label>
+      <select id="sumberTujuan">
+              <option value="">-- pilih dompet --</option>
+      </select>
+    </div>
+
+    <label for="catatan">Catatan</label>
+    <textarea
+      id="catatan"
+      placeholder="Catatan transfer"
+    ></textarea>
+
+    <p id="status"></p>
+
+    <div class="modalAction">
+
+      <button onclick="closeModal()">
+        Batal
+      </button>
+
+      <button id="btnSimpanKredit" onclick="simpanKredit()">
+        Simpan
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="header">
+    <h2>Kredit</h2>
+  </div>
+
+  <div class="card">
+    <!-- kredit akan dirender di sini -->
+    <div id="kreditList" class="skeleton-card"></div>
+  </div>
+  
+
+  <div class="card">  
+    
+    <button id="btnKredit">+ Tambah Kredit</button>
+
+  </div>
+
+  <div class="bottomNav">
+
+            <button onclick="lihatDashboard()">
+              <span>🏠</span>
+              <small>Home</small>
+            </button>
+
+            <button onclick="lihatDompet()">
+              <span>💳</span>
+              <small>Dompet</small>
+            </button>
+
+            <button onclick="lihatLaporan()">
+              <span>📊</span>
+              <small>Laporan</small>
+            </button>
+
+            <button onclick="lihatProfil()">
+              <span>👤</span>
+              <small>Profil</small>
+            </button>
+
+</div>
+
+</div>
+
+
+
+
+<footer id="footer">
+© 2026 Catet-In by mbayusubagja
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/kredit.js"></script>
+<script src="js/nav.js"></script>
+</body>
+</html>

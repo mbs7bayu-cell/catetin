@@ -1,0 +1,58 @@
+.card {
+    margin-bottom: 10px;
+}
+/* ================ profil card ================== */
+
+.profil-card{
+  background:var(--cardMenu);
+  border-radius:12px;
+  padding:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.profil-card .header h2{
+  margin:0;
+  font-size:20px;
+}
+
+.profil-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:5px 16px;
+  border-bottom:1px solid #eee;
+}
+
+.profil-item:last-child{
+  border-bottom:none;
+}
+
+.label{
+  color:var(--text);
+  font-weight:500;
+}
+
+.value{
+  font-weight:600;
+  text-align:right;
+  margin-left: 15px;
+}
+
+.btnProfile{
+  font-size: 12px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--button);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.btnProfile:hover{
+  background: var(--button);
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+}

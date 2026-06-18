@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#3B82C4" id="themeColor">
+<title>Pemasukan</title>
+<script src="js/theme-init.js"></script>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/button.css">
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h2>Tambah Pemasukan</h2>
+  </div>
+
+  <div class="card">
+
+    <!-- 🔥 DOMPET (WAJIB ADA ID) -->
+    <label for="sumberDana">Dompet</label>
+    <select id="sumberDana">
+      <option value="">-- pilih dompet --</option>
+    </select>
+
+    <label for="kategori">Kategori</label>
+    <div class="inputWrapper">
+
+      <input
+        type="text"
+        id="kategori"
+        autocomplete="off"
+        oninput="showKategori()"
+        placeholder="Contoh : Gaji"
+      >
+
+      <div id="kategoriDropdown"></div>
+
+    </div>
+
+    <label for="nominal">Nominal</label>
+    <input id="nominal" type="text" inputmode="numeric" placeholder="0">
+
+    <label for="catatan">Catatan</label>
+    <textarea id="catatan" placeholder="Catatan"></textarea>
+
+    <p id="status"></p>
+
+    <!-- 🔥 BUTTON PAKAI FUNCTION -->
+    <button id="btnSimpan" onclick="simpanPemasukan()">Simpan</button>
+
+    <button class="btnBack" >Kembali</button>
+
+  </div>
+
+</div>
+
+<footer id="footer">
+© 2026 Catet-In by mbayusubagja
+</footer>
+
+<!-- SCRIPT -->
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/pemasukan.js"></script>
+
+</body>
+</html>
