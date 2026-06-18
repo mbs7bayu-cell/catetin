@@ -10,6 +10,12 @@ if(!user){
   throw new Error("Belum login");
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+
+  loadTheme();
+
+});
+
 // ================= get  profil =================
 async function getProfil(){
 

@@ -104,3 +104,8 @@ function resetForm(){
   document.getElementById("gmail").value = "";
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+
+  loadTheme();
+
+});
