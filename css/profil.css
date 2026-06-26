@@ -56,3 +56,12 @@ body{
   background:var(--bg);
   color:var(--text);
 }
+
+.card-notice{
+  background:#D6EEFF;
+  color: #333;
+  border-radius:12px;
+  padding:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  margin-bottom: 10px;
+}
