@@ -234,6 +234,7 @@ body{
   color:white;
   font-weight:500;
   padding: 20px;
+  padding-right: 0;
 }
 
 .switch{
