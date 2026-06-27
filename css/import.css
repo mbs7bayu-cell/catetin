@@ -1,0 +1,330 @@
+/* ================= HEADER ================= */
+
+.header{
+    margin-bottom:10px;
+}
+
+.header h2{
+    margin-bottom:6px;
+}
+
+.header p{
+    font-size:14px;
+    color:var(--textSecondary);
+}
+
+/* ================= CARD ================= */
+
+.card{
+    margin-bottom:10px;
+    padding: 16px;
+}
+
+.hidden{
+
+    display:none;
+
+}
+
+.btnCatatan{
+
+    background:none;
+
+    border:none;
+
+    padding:0;
+
+    color:#2563eb;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    text-align:left;
+
+    cursor:pointer;
+
+}
+
+/* ================= FILE ================= */
+
+.infoFile{
+
+    margin-top:15px;
+    padding:16px;
+
+    background:var(--bg);
+
+    border:1px dashed #bbb;
+    border-radius:12px;
+
+    text-align:center;
+
+    font-size:14px;
+
+    color:var(--textSecondary);
+
+    word-break:break-word;
+
+}
+
+/* ================= PREVIEW ================= */
+
+#previewCard h3{
+
+    margin-bottom:15px;
+
+}
+
+
+/* ================= BUTTON ================= */
+
+#btnImport{
+
+    width:100%;
+    margin-bottom: 20px;
+    margin-top: 0 !important;
+
+}
+
+
+#previewList{
+
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+
+}
+
+/* CARD */
+
+.previewItem{
+
+    background:var(--card);
+
+    border:1px solid rgba(0,0,0,.08);
+
+    border-radius:16px;
+
+    padding:16px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+}
+
+/* HEADER */
+
+.previewHeader{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.previewCheck{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+}
+
+.previewCheck input{
+
+    width:18px;
+
+    height:18px;
+
+    margin:0;
+
+}
+
+.previewTanggal{
+
+    font-size:12px;
+
+    color:var(--textSecondary);
+
+}
+
+/* BODY */
+
+.previewBody{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+}
+
+.previewJudul{
+
+    font-size:15px;
+
+    font-weight:600;
+
+    line-height:1.45;
+
+}
+
+.previewNominal{
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+.previewMasuk{
+
+    color:#16a34a;
+
+}
+
+.previewKeluar{
+
+    color:#dc2626;
+
+}
+
+.previewTransfer{
+
+    color:#2563eb;
+
+}
+
+/* FORM */
+
+.previewForm{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+.previewForm textarea{
+
+    width:100%;
+
+    min-height:70px;
+
+    padding:10px;
+
+    border-radius:10px;
+
+    border:1px solid rgba(0,0,0,.12);
+
+    resize:vertical;
+
+    background:var(--bg);
+
+}
+
+#btnImport{
+
+    width:100%;
+
+    margin-top:18px;
+
+    padding:14px;
+
+    font-size:16px;
+
+    font-weight:700;
+
+}
+
+.previewForm label{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    margin-bottom:-6px;
+
+}
+
+.previewForm select{
+
+    width:100%;
+
+    padding:10px 12px;
+
+    border-radius:10px;
+
+    border:1px solid rgba(0,0,0,.12);
+
+    background:var(--bg);
+
+}
+
+.supportDesc{
+    color:var(--textSecondary);
+    margin:10px 0 16px;
+}
+
+.supportList{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.supportItem{
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.success{
+
+    background:#dcfce7;
+
+    color:#166534;
+
+}
+
+.coming{
+
+    background:#f3f4f6;
+
+    color:#6b7280;
+
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (min-width:700px){
+
+    .container{
+
+        margin:auto;
+
+    }
+
+}

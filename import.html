@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Import Transaksi</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/import.css">
+<link rel="stylesheet" href="css/button.css">
+<link rel="stylesheet" href="css/navigasi.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h2>📥 Import Transaksi</h2>
+
+        <p>
+            Upload file mutasi bank atau e-wallet.
+        </p>
+
+    </div>
+
+    <div class="card" id="supportCard">
+
+    <h3>Format yang Didukung</h3>
+
+    <p class="supportDesc">
+        Import transaksi secara otomatis dari file mutasi.
+    </p>
+
+    <div class="supportList">
+
+            <div class="supportItem success">
+                ✅ BSI (PDF)
+            </div>
+
+            <div class="supportItem success">
+                ✅ GoPay (PDF)
+            </div>
+
+            <div class="supportItem coming">
+                🚧 BCA
+            </div>
+
+            <div class="supportItem coming">
+                🚧 SeaBank
+            </div>
+
+            <div class="supportItem coming">
+                🚧 DANA
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <button id="btnPilihFile">
+            📄 Pilih File PDF / CSV
+        </button>
+
+        <input
+            type="file"
+            id="fileInput"
+            accept=".pdf,.csv"
+            hidden>
+
+        <div id="infoFile" class="infoFile">
+
+            Belum ada file dipilih
+
+        </div>
+
+    </div>
+
+    <div
+    class="card"
+    id="summaryCard"
+    style="display:none;">
+
+        <h3>Ringkasan Import</h3>
+
+        <div id="summaryContent"></div>
+
+    </div>
+
+    <div
+        id="previewCard"
+        class="card"
+        style="display:none;">
+
+        <h3>Preview</h3>
+
+        <div id="previewList">
+
+        </div>
+
+    </div>
+
+    <button
+        id="btnImport"
+        style="display:none;">
+
+        Import Transaksi
+
+    </button>
+
+</div>
+
+<div class="bottomNav">
+
+            <button onclick="lihatDashboard()">
+              <span>🏠</span>
+              <small>Home</small>
+            </button>
+
+            <button onclick="lihatDompet()">
+              <span>💳</span>
+              <small>Dompet</small>
+            </button>
+
+            <button onclick="lihatLaporan()">
+              <span>📊</span>
+              <small>Laporan</small>
+            </button>
+
+            <button onclick="lihatProfil()">
+              <span>👤</span>
+              <small>Profil</small>
+            </button>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+</script>
+
+<script src="js/import.js"></script>
+<script src="js/nav.js"></script>
+
+</body>
+</html>

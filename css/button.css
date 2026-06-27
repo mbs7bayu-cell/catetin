@@ -252,7 +252,7 @@ color:#777;
 font-weight:400;
 font-size:16px;
 text-align:right;
-color:#2d89ef;
+color:var(--text);
 flex-shrink: 0;
 }
 

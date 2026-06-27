@@ -4,6 +4,26 @@
   color:blue;
 }
 
+.logo-login{
+    width:40px;
+    height:40px;
+    object-fit:contain;
+}
+
+.header-login{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    margin-bottom:20px;
+    margin-top: 20px;
+}
+
+.nama-app {
+    margin:0;
+    font-size:30px;
+}
+
 .btnAdmin{
   top:40px;
   right:25%;

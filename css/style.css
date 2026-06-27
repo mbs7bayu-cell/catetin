@@ -24,7 +24,7 @@ body{
   color:var(--text);
   padding:20px;
   font-family:'Inter', sans-serif;
-
+  padding-bottom: 90px;
 }
 
 .container{

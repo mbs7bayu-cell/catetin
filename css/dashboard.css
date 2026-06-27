@@ -1,16 +1,14 @@
 .header{
   background:var(--primary);
   color:white;
-  padding:30px;
+  padding:20px;
   border-radius:16px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 body{
   margin: 0;
 }
-
-
 
 .header h2 {
   margin-bottom: 40px;
@@ -20,6 +18,26 @@ body{
 
 .header p {
   margin-top: 5px;
+}
+
+.appTitle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logoDashboard{
+  width:40px;
+  height:40px;
+  object-fit:contain;
+}
+
+.appText{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+  font-size: 30px;
+  font-weight: bold;
 }
 
 .card{
@@ -43,6 +61,8 @@ body{
   gap:12px;
 }
 
+
+
 .menu button{
   padding:16px;
   border:none;
@@ -61,6 +81,10 @@ body{
 
 .menu button:active{
   transform:scale(0.98);
+}
+
+.menu .card {
+  margin-bottom: 0;
 }
 
 .logoutBtn{
@@ -209,6 +233,7 @@ body{
   font-size:11px;
   color:white;
   font-weight:500;
+  padding: 20px;
 }
 
 .switch{
@@ -294,6 +319,26 @@ body{
 
   .ringkasanBulan{
     flex-direction:column;
+  }
+
+  .appText {
+    font-size: 20px;
+  }
+
+  .rememberText {
+    font-size: 10px;
+  }
+
+}
+
+@media (max-width:420px){
+
+  .appText {
+    font-size: 20px;
+  }
+
+  .rememberText {
+    font-size: 10px;
   }
 
 }

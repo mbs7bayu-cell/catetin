@@ -47,6 +47,10 @@ function kredit(){
   window.location.href = "kredit.html";
 }
 
+function importTransaksi(){
+    location.href = "import.html";
+}
+
 // ================ sembunyikan saldo ========================
   let saldoDisembunyikan =
   localStorage.getItem("hideSaldo") === "true";

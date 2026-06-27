@@ -28,7 +28,19 @@
 
       <div class="headerTop">
 
-        <h2>Catet-In</h2>
+        <div class="appTitle">
+
+          <img
+            src="./icon-512.png"
+            alt="Logo"
+            class="logoDashboard"
+          >
+
+          <div class="appText">
+            <div>Catet-In</div>
+          </div>
+
+        </div>
 
         <div class="keepLoginBox">
 
@@ -126,6 +138,12 @@
           <button onclick="transfer()">Transfer (Pindah Saldo)</button>
           <button onclick="kredit()">Kredit</button>
 
+                <hr style="margin:15px 0; opacity:.15;">
+
+          <button class="btnImport" onclick="importTransaksi()">
+              📥 Import Transaksi
+          </button>
+
 
           
     </div>
@@ -156,10 +174,6 @@
             </button>
 
 </div>
-
-<footer id="footer">
-© 2026 Catet-In by mbayusubagja
-</footer>
 
 <script src="js/config.js"></script>
 <script src="js/auth.js"></script>
