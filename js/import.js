@@ -399,9 +399,21 @@ btnImport.onclick = async () => {
 
         const hasil = await res.json();
 
-        alert(
-            `Berhasil import ${hasil.jumlah} transaksi`
-        );
+        setTimeout(() => {
+
+            const pesan = 
+        `✅ Berhasil import ${hasil.jumlah} transaksi, cek pada laporan sesuai tanggal transaksi dibuat.`;
+            
+            sessionStorage.setItem(
+            "toastMessage",
+            pesan
+            );
+
+        window.location.href =
+          "dashboard.html";
+            
+
+        }, 1200);
 
     }catch(err){
 
