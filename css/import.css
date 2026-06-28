@@ -1,9 +1,5 @@
 /* ================= HEADER ================= */
 
-.header{
-    
-}
-
 .header h2{
     margin-bottom:6px;
 }
@@ -33,7 +29,7 @@
 
     padding:0;
 
-    color:#2563eb;
+    color:var(--text);
 
     font-size:14px;
 
@@ -43,6 +39,10 @@
 
     cursor:pointer;
 
+}
+
+.btnCatatan:hover{
+    background: none;
 }
 
 /* ================= FILE ================= */
