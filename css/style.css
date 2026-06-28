@@ -6,6 +6,8 @@
   --cardMenu:#ffffff;
   --button:#3B82C4;
   --cardList: #ffffff;
+  --cardImport: #e0e0e0;
+
 }
 
 .dark{
@@ -16,6 +18,7 @@
   --cardMenu:#1e1e1e;
   --button:#333;
   --cardList: #222;
+  --cardImport: #666;
 
 }
 
