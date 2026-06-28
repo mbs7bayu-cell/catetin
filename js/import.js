@@ -333,66 +333,9 @@ async function loadDompet(provider){
 
 // ===================== import =====================
 
-btnImport.onclick = async () => {
+btnImport.onclick = async () => {
 
-    const idDompet =
-    document.getElementById("dompetSelect").value;
-
-    if(!idDompet){
-
-        alert("Pilih dompet terlebih dahulu.");
-
-        return;
-
-    }
-
-    dataImport.forEach(trx=>{
-
-        trx.dompet = idDompet;
-
-    });
-    
-    const transaksi = dataImport.filter(x => x.dipilih);
-
-    if(transaksi.length === 0){
-        alert("Belum ada transaksi yang dipilih.");
-        return;
-    }
-
-    btnImport.disabled = true;
-    btnImport.textContent = "Mengimport...";
-
-    try{
-
-        const res = await fetch(API,{
-            method:"POST",
-            body:JSON.stringify({
-
-                action:"importTransaksi",
-
-                id_user:user.userId,
-
-                transaksi:transaksi
-
-            })
-        });
-
-        const hasil = await res.json();
-
-        alert(
-            `Berhasil import ${hasil.berhasil} transaksi`
-        );
-
-    }catch(err){
-
-        console.error(err);
-
-        alert("Import gagal.");
-
-    }
-
-    btnImport.disabled = false;
-    btnImport.textContent = "Import Transaksi";
+        alert("belum dapat digunakan.");
 
 };
 
