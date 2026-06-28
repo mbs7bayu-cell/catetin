@@ -71,7 +71,7 @@
 
 #previewCard h3{
 
-    margin-bottom:15px;
+    margin-bottom:5px;
 
 }
 
@@ -229,6 +229,10 @@
     color: var(--text);
 }
 
+.dompetTujuan {
+    color: var(--text);
+}
+
 .previewForm textarea{
 
     width:100%;
@@ -356,6 +360,34 @@
 body {
     background: var(--bg);
     color: var(--text);
+}
+
+.checkAll{
+    display:flex;
+    align-items:center;
+    gap:5px;
+
+    margin:0;
+    margin-bottom: 5px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+
+    cursor:pointer;
+    user-select:none;
+
+    font-size:16px;
+    font-weight:500;
+}
+
+.checkAll input{
+    width:18px;
+    height:18px;
+    cursor:pointer;
+}
+
+#cekSemua {
+    margin: 0;
 }
 
 /* ================= RESPONSIVE ================= */

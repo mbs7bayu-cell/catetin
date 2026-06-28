@@ -28,6 +28,8 @@ document.getElementById("previewList");
 const btnImport =
 document.getElementById("btnImport");
 
+let daftarDompet = [];
+
 let dataImport = [];
 
 // ===================== pilih file =====================
@@ -109,6 +111,29 @@ fileInput.onchange = async function(){
         );
 
         await loadDompet(dataImport[0].provider);
+
+        const dompetSelect =
+        document.getElementById("dompetSelect");
+
+        // isi dompet sumber ke semua transaksi
+        dataImport.forEach(trx=>{
+            trx.dompet = dompetSelect.value;
+        });
+
+        // jika user mengganti dompet sumber
+        dompetSelect.onchange = ()=>{
+
+            dataImport.forEach(trx=>{
+                trx.dompet = dompetSelect.value;
+            });
+
+            document
+                .querySelectorAll(".dompetTujuan")
+                .forEach((select, i)=>{
+                    isiDompetTujuan(select, dataImport[i]);
+                });
+
+        };
 
         await loadKategori();
 
@@ -206,6 +231,8 @@ function tampilkanPreview(data){
 
             <select class="kategori"></select>
 
+            <select class="dompetTujuan hidden"></select>
+
             <button
                 type="button"
                 class="btnCatatan">
@@ -228,10 +255,20 @@ function tampilkanPreview(data){
         const cekImport = div.querySelector(".cekImport");
         const jenis = div.querySelector(".jenis");
         const kategori = div.querySelector(".kategori");
+        const dompetTujuan = div.querySelector(".dompetTujuan");
         const textarea = div.querySelector(".catatan");
 
         isiKategori(kategori, trx);
 
+        isiDompetTujuan(dompetTujuan, trx);
+
+        if(trx.jenis == "transfer"){
+
+            kategori.classList.add("hidden");
+            dompetTujuan.classList.remove("hidden");
+
+        }
+        
         cekImport.onchange = () => {
 
             dataImport[index].dipilih = cekImport.checked;
@@ -241,16 +278,36 @@ function tampilkanPreview(data){
                 dataImport[0].provider
             );
 
+            const cekSemua =
+            document.getElementById("cekSemua");
+
+            cekSemua.checked =
+                dataImport.every(x => x.dipilih);
+
         };
 
         jenis.onchange = () => {
 
             dataImport[index].jenis = jenis.value;
 
-            // reset kategori jika perlu
-            dataImport[index].kategori = "";
+            if (jenis.value == "transfer") {
 
-            isiKategori(kategori, dataImport[index]);
+                kategori.classList.add("hidden");
+                dompetTujuan.classList.remove("hidden");
+
+                dataImport[index].kategori = "transfer";
+
+            } else {
+
+                kategori.classList.remove("hidden");
+                dompetTujuan.classList.add("hidden");
+
+                dataImport[index].dompetTujuan = "";
+                dataImport[index].kategori = "";
+
+                isiKategori(kategori, dataImport[index]);
+
+            }
 
             tampilkanRingkasan(
                 dataImport,
@@ -264,6 +321,15 @@ function tampilkanPreview(data){
             dataImport[index].kategori = kategori.value;
 
         };
+
+        dompetTujuan.onchange = ()=>{
+
+            dataImport[index].dompetTujuan =
+                dompetTujuan.value;
+
+        };
+
+        
 
         textarea.oninput = () => {
 
@@ -288,6 +354,30 @@ function tampilkanPreview(data){
     });
 
     previewCard.style.display = "block";
+
+    const cekSemua =
+    document.getElementById("cekSemua");
+
+    cekSemua.checked =
+        dataImport.every(x => x.dipilih);
+
+    cekSemua.onchange = () => {
+
+        const pilih = cekSemua.checked;
+
+        dataImport.forEach(trx=>{
+            trx.dipilih = pilih;
+        });
+
+        tampilkanPreview(dataImport);
+
+        tampilkanRingkasan(
+            dataImport,
+            dataImport[0].provider
+        );
+
+    };
+
     btnImport.style.display = "block";
 
 }
@@ -304,6 +394,8 @@ async function loadDompet(provider){
     });
 
     const data = await res.json();
+
+    daftarDompet = data;
 
     console.log(data);
     console.log(Array.isArray(data));
@@ -821,6 +913,10 @@ function autoProcess(data, provider){
 
         trx.dompet = null;
 
+        trx.dompetTujuan = "";
+        
+        trx.biayaAdmin = 0;
+
         trx.kategori = "";
 
         trx.catatan = "";
@@ -846,6 +942,18 @@ function autoJenis(trx){
 }
 
 function isiKategori(select, trx){
+
+    if(trx.jenis == "transfer"){
+
+        select.innerHTML = `
+            <option value="transfer">
+                Transfer
+            </option>
+        `;
+
+        select.value = "transfer";
+        return;
+    }
 
     const daftar = kategoriUser[trx.jenis] || [];
 
@@ -884,4 +992,32 @@ function isiKategori(select, trx){
 
     select.innerHTML = html;
     select.value = trx.kategori;
+}
+
+// ======================== ISI DOMPET TUJUAN ===========================
+function isiDompetTujuan(select, trx){
+
+    let html =
+        '<option value="">Pilih dompet tujuan</option>';
+
+    daftarDompet.forEach(dompet=>{
+
+        if(dompet.id_sumber == trx.dompet){
+            return;
+        }
+
+        html += `
+            <option value="${dompet.id_sumber}">
+                ${dompet.nama}
+            </option>
+        `;
+
+    });
+
+    select.innerHTML = html;
+
+    if(trx.dompetTujuan){
+        select.value = trx.dompetTujuan;
+    }
+
 }
