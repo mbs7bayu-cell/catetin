@@ -101,7 +101,7 @@
 
     background:var(--card);
 
-    border:1px solid rgba(0,0,0,.08);
+    border:1px solid var(--cardList);
 
     border-radius:16px;
 
@@ -239,7 +239,7 @@
 
     border-radius:10px;
 
-    border:1px solid rgba(0,0,0,.12);
+    border:1px solid var(--cardList);
 
     resize:vertical;
 
@@ -279,7 +279,7 @@
 
     border-radius:10px;
 
-    border:1px solid rgba(0,0,0,.12);
+    border:1px solid var(--cardList);
 
     background:var(--bg);
 
