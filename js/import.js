@@ -38,6 +38,35 @@ btnPilihFile.onclick = () => {
 
 };
 
+let kategoriUser = {
+    masuk: [],
+    keluar: [],
+    transfer: []
+};
+
+async function loadKategori(){
+
+    for(const jenis of ["masuk","keluar","transfer"]){
+
+        const res = await fetch(API,{
+            method:"POST",
+            body:JSON.stringify({
+                mode:"getKategori",
+                userId:user.userId,
+                jenis:jenis
+            })
+        });
+
+        const hasil = await res.json();
+
+        console.log(hasil);
+
+        kategoriUser[jenis] = hasil;
+
+    }
+
+}
+
 // ===================== file dipilih =====================
 
 fileInput.onchange = async function(){
@@ -80,6 +109,8 @@ fileInput.onchange = async function(){
         );
 
         await loadDompet(dataImport[0].provider);
+
+        await loadKategori();
 
 
         tampilkanPreview(dataImport);
@@ -173,26 +204,7 @@ function tampilkanPreview(data){
 
             </select>
 
-            <select class="kategori">
-
-                <option value="">Pilih kategori</option>
-
-                <option value="Belanja"
-                    ${trx.kategori=="Belanja"?"selected":""}>
-                    Belanja
-                </option>
-
-                <option value="QRIS"
-                    ${trx.kategori=="QRIS"?"selected":""}>
-                    QRIS
-                </option>
-
-                <option value="Transfer"
-                    ${trx.kategori=="Transfer"?"selected":""}>
-                    Transfer
-                </option>
-
-            </select>
+            <select class="kategori"></select>
 
             <button
                 type="button"
@@ -218,6 +230,8 @@ function tampilkanPreview(data){
         const kategori = div.querySelector(".kategori");
         const textarea = div.querySelector(".catatan");
 
+        isiKategori(kategori, trx);
+
         cekImport.onchange = () => {
 
             dataImport[index].dipilih = cekImport.checked;
@@ -232,6 +246,11 @@ function tampilkanPreview(data){
         jenis.onchange = () => {
 
             dataImport[index].jenis = jenis.value;
+
+            // reset kategori jika perlu
+            dataImport[index].kategori = "";
+
+            isiKategori(kategori, dataImport[index]);
 
             tampilkanRingkasan(
                 dataImport,
@@ -333,9 +352,67 @@ async function loadDompet(provider){
 
 // ===================== import =====================
 
-btnImport.onclick = async () => {
+btnImport.onclick = async () => {
 
-        alert("belum dapat digunakan.");
+    const idDompet =
+    document.getElementById("dompetSelect").value;
+
+    if(!idDompet){
+
+        alert("Pilih dompet terlebih dahulu.");
+
+        return;
+
+    }
+
+    dataImport.forEach(trx=>{
+
+        trx.dompet = idDompet;
+
+    });
+    
+    const transaksi = dataImport.filter(x => x.dipilih);
+
+    if(transaksi.length === 0){
+        alert("Belum ada transaksi yang dipilih.");
+        return;
+    }
+
+    btnImport.disabled = true;
+    btnImport.textContent = "Mengimport...";
+
+    try{
+
+        console.log(JSON.stringify(transaksi, null, 2));
+        const res = await fetch(API,{
+            method:"POST",
+            body:JSON.stringify({
+
+                action:"importTransaksi",
+
+                id_user:user.userId,
+
+                transaksi:transaksi
+
+            })
+        });
+
+        const hasil = await res.json();
+
+        alert(
+            `Berhasil import ${hasil.jumlah} transaksi`
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Import gagal.");
+
+    }
+
+    btnImport.disabled = false;
+    btnImport.textContent = "Import Transaksi";
 
 };
 
@@ -739,42 +816,10 @@ function autoProcess(data, provider){
         trx.dipilih = true;
 
         autoJenis(trx);
-        autoKategori(trx);
 
         return trx;
 
     });
-
-}
-
-function autoKategori(trx){
-
-    const ket =
-        trx.keterangan.toLowerCase();
-
-    if(ket.includes("qris")){
-
-        trx.kategori = "QRIS";
-
-    }
-
-    else if(ket.includes("shopee")){
-
-        trx.kategori = "Belanja";
-
-    }
-
-    else if(ket.includes("flip")){
-
-        trx.kategori = "Transfer";
-
-    }
-
-    else if(ket.includes("gotagihan")){
-
-        trx.kategori = "Tagihan";
-
-    }
 
 }
 
@@ -786,4 +831,45 @@ function autoJenis(trx){
 
     }
 
+}
+
+function isiKategori(select, trx){
+
+    const daftar = kategoriUser[trx.jenis] || [];
+
+    let html = '<option value="">Pilih kategori</option>';
+
+    daftar.forEach(k=>{
+
+        html += `
+            <option value="${k}">
+                ${k}
+            </option>
+        `;
+
+    });
+
+    // cari kategori yang cocok
+    let dipilih = daftar.find(k =>
+        trx.keterangan.toLowerCase().includes(k.toLowerCase())
+    );
+
+    if(dipilih){
+
+        trx.kategori = dipilih;
+
+    }else{
+
+        trx.kategori = trx.keterangan;
+
+        html += `
+            <option value="${trx.keterangan}" selected>
+                ${trx.keterangan} (baru)
+            </option>
+        `;
+
+    }
+
+    select.innerHTML = html;
+    select.value = trx.kategori;
 }

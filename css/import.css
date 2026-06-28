@@ -221,6 +221,14 @@
 
 }
 
+.jenis {
+    color: var(--text);
+}
+
+.kategori {
+    color: var(--text);
+}
+
 .previewForm textarea{
 
     width:100%;
@@ -339,6 +347,10 @@
 
 .summaryBox b{
     font-size:18px;
+}
+
+.summaryDompet {
+    margin-top: 10px;
 }
 
 /* ================= RESPONSIVE ================= */
