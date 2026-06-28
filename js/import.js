@@ -79,6 +79,9 @@ fileInput.onchange = async function(){
             file.name
         );
 
+        await loadDompet(dataImport[0].provider);
+
+
         tampilkanPreview(dataImport);
 
     }
@@ -102,11 +105,13 @@ function tampilkanPreview(data){
 
     }
 
-    data.forEach(trx=>{
+    data.forEach((trx,index)=>{
 
         const div = document.createElement("div");
 
         div.className = "previewItem";
+
+        div.dataset.index = index;
 
         const warna =
             trx.jenis === "keluar"
@@ -208,11 +213,47 @@ function tampilkanPreview(data){
 
         previewList.appendChild(div);
 
+        const cekImport = div.querySelector(".cekImport");
+        const jenis = div.querySelector(".jenis");
+        const kategori = div.querySelector(".kategori");
+        const textarea = div.querySelector(".catatan");
+
+        cekImport.onchange = () => {
+
+            dataImport[index].dipilih = cekImport.checked;
+
+            tampilkanRingkasan(
+                dataImport,
+                dataImport[0].provider
+            );
+
+        };
+
+        jenis.onchange = () => {
+
+            dataImport[index].jenis = jenis.value;
+
+            tampilkanRingkasan(
+                dataImport,
+                dataImport[0].provider
+            );
+
+        };
+
+        kategori.onchange = () => {
+
+            dataImport[index].kategori = kategori.value;
+
+        };
+
+        textarea.oninput = () => {
+
+            dataImport[index].catatan = textarea.value;
+
+        };
+
         const btnCatatan =
             div.querySelector(".btnCatatan");
-
-        const textarea =
-            div.querySelector(".catatan");
 
         btnCatatan.onclick = ()=>{
 
@@ -232,23 +273,126 @@ function tampilkanPreview(data){
 
 }
 
+// =================== load dompet ========================
+async function loadDompet(provider){
+
+    const res = await fetch(API,{
+        method:"POST",
+        body:JSON.stringify({
+            mode:"getDompet",
+            userId:user.userId
+        })
+    });
+
+    const data = await res.json();
+
+    console.log(data);
+    console.log(Array.isArray(data));
+
+    const select =
+        document.getElementById("dompetSelect");
+
+    if (!select) {
+        console.error("dompetSelect belum ada");
+        return;
+    }
+    
+    select.innerHTML = "";
+
+    data.forEach(dompet=>{
+
+        const option =
+            document.createElement("option");
+
+        option.value = dompet.id_sumber;
+        option.textContent = dompet.nama;
+
+        select.appendChild(option);
+
+    });
+
+    // otomatis pilih sesuai provider
+    const cocok = data.find(d => {
+
+        const nama = d.nama.toLowerCase();
+
+        return (
+            nama.includes(provider.toLowerCase()) ||
+            provider.toLowerCase().includes(nama)
+        );
+
+    });
+
+    if(cocok){
+
+        select.value = cocok.id_sumber;
+
+    }
+
+}
+
 // ===================== import =====================
 
-btnImport.onclick = async ()=>{
+btnImport.onclick = async () => {
 
-    if(dataImport.length === 0){
+    const idDompet =
+    document.getElementById("dompetSelect").value;
 
-        alert("Belum ada data.");
+    if(!idDompet){
+
+        alert("Pilih dompet terlebih dahulu.");
 
         return;
 
     }
 
-    console.log(dataImport);
+    dataImport.forEach(trx=>{
 
-    alert(
-        "Tahap berikutnya:\nKirim ke Apps Script."
-    );
+        trx.dompet = idDompet;
+
+    });
+    
+    const transaksi = dataImport.filter(x => x.dipilih);
+
+    if(transaksi.length === 0){
+        alert("Belum ada transaksi yang dipilih.");
+        return;
+    }
+
+    btnImport.disabled = true;
+    btnImport.textContent = "Mengimport...";
+
+    try{
+
+        const res = await fetch(API,{
+            method:"POST",
+            body:JSON.stringify({
+
+                action:"importTransaksi",
+
+                id_user:user.userId,
+
+                transaksi:transaksi
+
+            })
+        });
+
+        const hasil = await res.json();
+
+        alert(
+            `Berhasil import ${hasil.berhasil} transaksi`
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Import gagal.");
+
+    }
+
+    btnImport.disabled = false;
+    btnImport.textContent = "Import Transaksi";
 
 };
 
@@ -379,10 +523,51 @@ function tampilkanRingkasan(data, provider){
     const siap =
         data.filter(x=>x.dipilih).length;
 
+    const masuk =
+        data.filter(x=>x.jenis==="masuk").length;
+
+    const keluar =
+        data.filter(x=>x.jenis==="keluar").length;
+
+    const transfer =
+        data.filter(x=>x.jenis==="transfer").length;
+
     content.innerHTML = `
-        <p><b>Provider</b> : ${provider.toUpperCase()}</p>
-        <p><b>Transaksi</b> : ${data.length}</p>
-        <p><b>Siap diimport</b> : ${siap}</p>
+
+        <div class="summaryGrid">
+
+            <div class="summaryBox">
+                <small>Provider</small>
+                <b>${provider.toUpperCase()}</b>
+            </div>
+
+            <div class="summaryBox">
+                <small>Total</small>
+                <b>${data.length}</b>
+            </div>
+
+            <div class="summaryBox">
+                <small>Siap Import</small>
+                <b>${siap}</b>
+            </div>
+
+            <div class="summaryBox">
+                <small>Masuk</small>
+                <b>${masuk}</b>
+            </div>
+
+            <div class="summaryBox">
+                <small>Keluar</small>
+                <b>${keluar}</b>
+            </div>
+
+            <div class="summaryBox">
+                <small>Transfer</small>
+                <b>${transfer}</b>
+            </div>
+
+        </div>
+
     `;
 
     summary.style.display = "block";
@@ -602,7 +787,7 @@ function autoProcess(data, provider){
 
         trx.provider = provider;
 
-        trx.dompet = provider;
+        trx.dompet = null;
 
         trx.kategori = "";
 

@@ -1,7 +1,7 @@
 /* ================= HEADER ================= */
 
 .header{
-    margin-bottom:10px;
+    
 }
 
 .header h2{
@@ -16,7 +16,6 @@
 /* ================= CARD ================= */
 
 .card{
-    margin-bottom:10px;
     padding: 16px;
 }
 
@@ -83,7 +82,7 @@
 
     width:100%;
     margin-bottom: 20px;
-    margin-top: 0 !important;
+    margin-top: 15px !important;
 
 }
 
@@ -315,6 +314,31 @@
 
     color:#6b7280;
 
+}
+
+.summaryGrid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-top:14px;
+}
+
+.summaryBox{
+    padding:14px;
+    border-radius:12px;
+    background:var(--bg);
+    text-align:center;
+}
+
+.summaryBox small{
+    display:block;
+    color:var(--textSecondary);
+    margin-bottom:6px;
+    font-size:12px;
+}
+
+.summaryBox b{
+    font-size:18px;
 }
 
 /* ================= RESPONSIVE ================= */
