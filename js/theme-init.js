@@ -1,3 +1,10 @@
-if(localStorage.getItem("theme")==="dark"){
-  document.documentElement.classList.add("dark");
+if (localStorage.getItem("theme") === "dark") {
+    document.documentElement.classList.add("dark");
+    document
+        .querySelector('meta[name="theme-color"]')
+        .setAttribute("content", "#111827"); // warna dark
+} else {
+    document
+        .querySelector('meta[name="theme-color"]')
+        .setAttribute("content", "#3B82C4"); // warna light
 }
