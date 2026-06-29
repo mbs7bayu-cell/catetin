@@ -77,7 +77,10 @@ fileInput.onchange = async function(){
 
     if(!file) return;
 
-    infoFile.innerHTML =
+    showLoading();
+
+    try {
+        infoFile.innerHTML =
         "📄 " + file.name;
 
     previewCard.style.display = "none";
@@ -91,6 +94,8 @@ fileInput.onchange = async function(){
         await parseCSV(file);
 
     }else if(file.name.toLowerCase().endsWith(".pdf")){
+
+        await loadProfil();
 
         dataImport =
         await parsePDF(file);
@@ -143,6 +148,12 @@ fileInput.onchange = async function(){
     }
 
     tampilkanPreview(dataImport);
+
+    } finally {
+        hideLoading();
+    }
+
+    
 
 };
 
@@ -468,6 +479,20 @@ btnImport.onclick = async () => {
     if(transaksi.length === 0){
         alert("Belum ada transaksi yang dipilih.");
         return;
+    }
+
+    
+    const transferBelumLengkap = transaksi.find(trx =>
+        trx.jenis === "transfer" &&
+        !trx.dompetTujuan
+    );
+
+    if(transferBelumLengkap){
+
+        alert("Masih ada transaksi transfer yang belum dipilih dompet tujuannya.");
+
+        return;
+
     }
 
     btnImport.disabled = true;
@@ -822,8 +847,7 @@ function parseBSI(data){
         // Ambil angka
         // ===========================
 
-        const angka =
-            text.match(/\d[\d. ]*,00/g);
+        const angka = text.match(/\b\d{1,3}(?:\.\d{3})*\s*,00\b/g);
 
         if(!angka) return;
 
@@ -925,6 +949,8 @@ function autoProcess(data, provider){
 
         autoJenis(trx);
 
+        autoTransfer(trx);
+
         return trx;
 
     });
@@ -1019,5 +1045,78 @@ function isiDompetTujuan(select, trx){
     if(trx.dompetTujuan){
         select.value = trx.dompetTujuan;
     }
+
+}
+
+function normal(str){
+
+    return (str || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]/g,"")
+        .replace(/\s+/g," ")
+        .trim();
+
+}
+
+function autoTransfer(trx){
+
+    if(!namaUserNormal) return;
+
+    const ket = normal(trx.keterangan);
+
+    const kataTransfer = [
+        "transfer",
+        "trf",
+        "pemindahbukuan",
+        "ditransfer"
+    ];
+
+    const adaTransfer =
+        kataTransfer.some(k => ket.includes(k));
+
+    if(
+        adaTransfer &&
+        ket.includes(namaUserNormal)
+    ){
+
+        trx.jenis = "transfer";
+        trx.kategori = "transfer";
+
+    }
+
+}
+
+// ==================== load profil ========================
+
+let namaUserNormal = "";
+
+async function loadProfil(){
+
+    const res = await fetch(
+        API + "?mode=getProfil&id_user=" + user.userId
+    );
+
+    const r = await res.json();
+
+    namaUserNormal = normal(r.data?.nama || "");
+
+}
+
+// ============================== loading =====================
+function showLoading(text = "Memproses file..."){
+
+    document.querySelector("#loadingImport h3").textContent = text;
+
+    document
+        .getElementById("loadingImport")
+        .classList.remove("hidden");
+
+}
+
+function hideLoading(){
+
+    document
+        .getElementById("loadingImport")
+        .classList.add("hidden");
 
 }
