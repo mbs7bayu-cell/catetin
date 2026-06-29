@@ -357,11 +357,6 @@
     margin-top: 10px;
 }
 
-body {
-    background: var(--bg);
-    color: var(--text);
-}
-
 .checkAll{
     display:flex;
     align-items:center;
