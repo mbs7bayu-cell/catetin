@@ -181,9 +181,11 @@ function tampilkanPreview(data){
         div.dataset.index = index;
 
         const warna =
-            trx.jenis === "keluar"
+        trx.jenis === "keluar"
             ? "previewKeluar"
-            : "previewMasuk";
+            : trx.jenis === "transfer"
+                ? "previewTransfer"
+                : "previewMasuk";
 
         div.innerHTML = `
 
