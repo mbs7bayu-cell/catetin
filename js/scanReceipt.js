@@ -49,37 +49,299 @@ cameraInput.onchange = handleFile;
 
 galleryInput.onchange = handleFile;
 
-function cariNominal(text){
+function ambilAngkaTerbesar(baris){
 
-    const pola = [
+    const angka =
+        baris.match(/\d[\d.,]*/g);
 
-        /^Grand Total\s+([\d.,]+)/im,
+    if(!angka) return 0;
 
-        /^Jumlah Bayar\s+([\d.,]+)/im,
+    let terbesar = 0;
 
-        /^Total Belanja\s+([\d.,]+)/im,
+    angka.forEach(a=>{
 
-        /^Total\s+([\d.,]+)/im
+        const nilai =
+            normalNominal(a);
+
+        if(nilai > terbesar){
+
+            terbesar = nilai;
+
+        }
+
+    });
+
+    return terbesar;
+
+}
+
+function extractNominal(text){
+
+    const lines = text
+        .split("\n")
+        .map(x => x.trim())
+        .filter(Boolean);
+
+    const regexKeyword = [
+
+        /^grand total\b/i,
+        /^jumlah bayar\b/i,
+        /^jumlah dibayar\b/i,
+        /^total pembayaran\b/i,
+        /^total belanja\b/i,
+
+        /^\s*total\s+\d/i, // Total 73,333
+        /^\s*total\s*$/i   // Total (angka di baris berikutnya)
 
     ];
 
-    for(const regex of pola){
+    // Cari berdasarkan keyword
+    for(let i=0;i<lines.length;i++){
 
-        const hasil = text.match(regex);
+        const line = lines[i];
 
-        if(hasil){
+        if(regexKeyword.some(r => r.test(line))){
 
-            return Number(
-                hasil[1]
-                    .replace(/\./g,"")
-                    .replace(/,/g,"")
-            );
+            // angka pada baris yang sama
+            let nominal =
+                ambilAngkaTerbesar(line);
+
+            // kalau tidak ada, cek 2 baris berikutnya
+            if(!nominal){
+
+                for(
+                    let j=i+1;
+                    j<=i+2 && j<lines.length;
+                    j++
+                ){
+
+                    nominal =
+                        ambilAngkaTerbesar(lines[j]);
+
+                    if(nominal) break;
+
+                }
+
+            }
+
+            if(nominal){
+
+                return nominal;
+
+            }
 
         }
 
     }
 
-    return 0;
+    // fallback
+    const semua =
+        text.match(/\d{1,3}(?:[.,]\d{3})+/g);
+
+    if(!semua) return 0;
+
+    return normalNominal(
+        semua[semua.length-1]
+    );
+
+}
+
+function normalNominal(str){
+
+    return Number(
+        str
+            .replace(/[^\d]/g,"")
+    );
+
+}
+
+function extractTanggal(text){
+
+    const pola=[
+
+        /\d{2}\/\d{2}\/\d{4}/,
+
+        /\d{2}-\d{2}-\d{4}/,
+
+        /\d{4}-\d{2}-\d{2}/,
+
+        /\d{2}\s+[A-Za-z]{3,9}\s+\d{4}/
+
+    ];
+
+    for(const p of pola){
+
+        const m=text.match(p);
+
+        if(m){
+
+            return formatTanggal(m[0]);
+
+        }
+
+    }
+
+    return "";
+
+}
+
+function formatTanggal(tgl){
+
+    tgl = tgl.trim();
+
+    // 30/06/2026
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(tgl)){
+
+        const [h,b,t] = tgl.split("/");
+
+        return `${t}-${b}-${h}`;
+
+    }
+
+    // 06-30-2026 (MM-dd-yyyy)
+    if(/^\d{2}-\d{2}-\d{4}$/.test(tgl)){
+
+        const [b,h,t] = tgl.split("-");
+
+        return `${t}-${b}-${h}`;
+
+    }
+
+    // 2026-06-30
+    if(/^\d{4}-\d{2}-\d{2}$/.test(tgl)){
+
+        return tgl;
+
+    }
+
+    // 19 JUN 2026 / 19 Jun 2026 / 19 Juni 2026
+    const bulan = {
+
+        jan:"01",
+        januari:"01",
+
+        feb:"02",
+        februari:"02",
+
+        mar:"03",
+        maret:"03",
+
+        apr:"04",
+        april:"04",
+
+        mei:"05",
+
+        jun:"06",
+        juni:"06",
+
+        jul:"07",
+        juli:"07",
+
+        agu:"08",
+        agustus:"08",
+        aug:"08",
+        august:"08",
+
+        sep:"09",
+        september:"09",
+
+        okt:"10",
+        oktober:"10",
+        oct:"10",
+        october:"10",
+
+        nov:"11",
+        november:"11",
+
+        des:"12",
+        desember:"12",
+        dec:"12",
+        december:"12"
+
+    };
+
+    const m =
+        tgl.match(
+            /(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/
+        );
+
+    if(m){
+
+        const hari = m[1].padStart(2,"0");
+        const bln = bulan[m[2].toLowerCase()];
+        const tahun = m[3];
+
+        if(bln){
+
+            return `${tahun}-${bln}-${hari}`;
+
+        }
+
+    }
+
+    return "";
+
+}
+
+function extractJam(text){
+
+    if(!jam){
+
+        const now = new Date();
+
+        jam =
+            now.toTimeString()
+            .substring(0,5);
+
+    }
+
+    const m =
+        text.match(/\d{2}:\d{2}(?::\d{2})?/);
+
+    return m ? m[0] : "";
+
+}
+
+function extractMerchant(text){
+
+    const lines = text
+        .split("\n")
+        .map(x=>x.trim())
+        .filter(Boolean);
+
+    const blacklist = [
+        "delivered",
+        "status",
+        "subtotal",
+        "total",
+        "diskon",
+        "ppn",
+        "kritik",
+        "saran",
+        "email",
+        "lunas",
+        "ref.",
+        "tgl",
+        "biaya",
+        "bayar"
+    ];
+
+    for(const line of lines){
+
+        const low = line.toLowerCase();
+
+        if(
+            line.length < 3 ||
+            blacklist.some(x=>low.includes(x))
+        ){
+            continue;
+        }
+
+        return line;
+
+    }
+
+    return "";
 
 }
 
@@ -100,6 +362,11 @@ async function handleFile(){
         await loadProfil();
 
         transaksi = await parseReceipt(file);
+
+        isiKategori(
+            document.getElementById("kategori"),
+            transaksi
+        );
 
         await loadDompet(transaksi.provider);
 
@@ -129,69 +396,31 @@ async function parseReceipt(file){
 
 function parseReceiptText(text){
 
-    const trx = {
-        provider: "receipt",
-        tanggal: "",
-        jam: "",
-        nominal: 0,
-        jenis: "keluar",
-        kategori: "",
-        dompet: "",
-        dompetTujuan: "",
+    return{
+
+        provider:"manual",
+
+        tanggal:extractTanggal(text),
+
+        jam:extractJam(text),
+
+        nominal:extractNominal(text),
+
+        jenis:"keluar",
+
+        kategori:"",
+
+        dompet:"",
+
+        dompetTujuan:"",
+
         keterangan:"Belanja",
-        catatan: "",
-        dipilih: true
+
+        catatan:extractMerchant(text),
+
+        dipilih:true
+
     };
-
-    // ================= Total =================
-
-    const total =
-        text.match(/Total\s+([\d.,]+)/i);
-
-    if(total){
-
-        trx.nominal =
-            cariNominal(text);
-
-    }
-
-    // ================= Tanggal =================
-
-    const tgl =
-        text.match(/Tgl\.\s*(\d{2}-\d{2}-\d{4})/i);
-
-    if(tgl){
-
-        const [bulan,hari,tahun] = tgl[1].split("-");
-
-        trx.tanggal =
-            `${tahun}-${bulan}-${hari}`;
-
-    }
-
-    // ================= Jam =================
-
-    const jam =
-        text.match(/(\d{2}:\d{2}:\d{2})/);
-
-    if(jam){
-
-        trx.jam = jam[1];
-
-    }
-
-    // ================= Nama toko =================
-
-    const toko =
-        text.match(/Alfamart/i);
-
-    if(toko){
-
-        trx.catatan = toko[0];
-
-    }
-
-    return trx;
 
 }
 
@@ -200,9 +429,10 @@ async function OCR(file){
     const {
         data:{text}
     } =
+    
     await Tesseract.recognize(
         file,
-        "ind"
+        "ind+eng"
     );
 
     return text;
