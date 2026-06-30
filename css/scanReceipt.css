@@ -1,0 +1,262 @@
+/* ================= HEADER ================= */
+
+.header h2{
+    margin-bottom:6px;
+}
+
+.header p{
+    font-size:14px;
+    color:var(--text);
+}
+
+/* ================= CARD ================= */
+
+.card{
+    padding:16px;
+}
+
+/* ================= BUTTON PILIH ================= */
+
+.scanActions{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.scanActions button{
+    width:100%;
+}
+
+/* ================= FILE INFO ================= */
+
+.infoFile{
+    margin-top:15px;
+    padding:16px;
+
+    background:var(--bg);
+
+    border:1px dashed #bbb;
+    border-radius:12px;
+
+    text-align:center;
+
+    font-size:14px;
+
+    color:var(--textSecondary);
+
+    word-break:break-word;
+}
+
+/* ================= PREVIEW ================= */
+
+#previewCard h3{
+    margin-bottom:14px;
+}
+
+.previewForm{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.previewForm label{
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:-6px;
+}
+
+.previewForm input,
+.previewForm select,
+.previewForm textarea{
+
+    width:100%;
+
+    padding:10px 12px;
+
+    border-radius:10px;
+
+    border:1px solid rgba(0,0,0,.12);
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    font-size:15px;
+
+    box-sizing:border-box;
+
+}
+
+.previewForm textarea{
+
+    min-height:90px;
+
+    resize:vertical;
+
+}
+
+/* ================= THUMBNAIL ================= */
+
+.previewImage{
+
+    width:100%;
+
+    max-height:220px;
+
+    object-fit:contain;
+
+    border-radius:12px;
+
+    background:var(--bg);
+
+    border:1px solid var(--border);
+
+    margin-bottom:15px;
+
+}
+
+/* ================= OCR INFO ================= */
+
+.ocrInfo{
+
+    padding:12px;
+
+    border-radius:10px;
+
+    background:var(--bg);
+
+    font-size:13px;
+
+    color:var(--textSecondary);
+
+    margin-bottom:15px;
+
+}
+
+/* ================= SIMPAN ================= */
+
+#btnSimpan{
+
+    width:100%;
+
+    margin-top:18px;
+
+    font-size:16px;
+
+    font-weight:700;
+
+}
+
+/* ================= LOADING ================= */
+
+.loadingImport{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+.loadingImport.hidden{
+
+    display:none;
+
+}
+
+.loadingBox{
+
+    background:var(--card);
+
+    color:var(--text);
+
+    padding:28px;
+
+    border-radius:16px;
+
+    text-align:center;
+
+    width:280px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+
+}
+
+.spinner{
+
+    width:44px;
+
+    height:44px;
+
+    margin:0 auto 18px;
+
+    border:4px solid #e5e7eb;
+
+    border-top-color:#2563eb;
+
+    border-radius:50%;
+
+    animation:putar .8s linear infinite;
+
+}
+
+.previewSheet{
+
+    position:fixed;
+
+    left:0;
+
+    right:0;
+
+    bottom:0;
+
+    border-radius:24px 24px 0 0;
+
+    background:var(--card);
+
+    padding:20px;
+
+    transform:translateY(110%);
+
+    transition:.3s;
+
+    z-index:1000;
+
+    max-height:90vh;
+
+    overflow:auto;
+
+}
+
+.previewSheet.show{
+
+    transform:translateY(0);
+
+}
+
+@keyframes putar{
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(min-width:700px){
+
+    .container{
+        margin:auto;
+    }
+
+}

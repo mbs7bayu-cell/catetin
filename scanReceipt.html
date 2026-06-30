@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="/manifest.json">
+
+<meta
+    name="theme-color"
+    content="#3B82C4"
+    id="themeColor">
+
+<title>Scan Bukti Transaksi</title>
+
+<script src="js/theme-init.js"></script>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/scanReceipt.css">
+<link rel="stylesheet" href="css/button.css">
+<link rel="stylesheet" href="css/navigasi.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h2>📷 Scan Bukti Transaksi</h2>
+
+        <p>
+            Ambil foto atau pilih bukti transaksi.
+        </p>
+
+    </div>
+
+    <div class="card">
+
+        <button id="btnCamera">
+
+            📷 Ambil Foto
+
+        </button>
+
+        <button id="btnGallery">
+
+            🖼 Pilih Gambar / PDF
+
+        </button>
+
+        <input
+            type="file"
+            id="cameraInput"
+            accept="image/*"
+            capture="environment"
+            hidden>
+
+        <input
+            type="file"
+            id="galleryInput"
+            accept="image/*,.pdf"
+            hidden>
+
+        <div id="infoFile" class="infoFile">
+
+            Belum ada file dipilih
+
+        </div>
+
+    </div>
+
+    <div
+        class="card"
+        id="previewCard"
+        style="display:none">
+
+        <h3>Preview Transaksi</h3>
+
+        <div class="previewForm">
+
+            <label>Tanggal</label>
+            <input type="date" id="tanggal">
+
+            <label>Jam</label>
+            <input type="time" id="jam">
+
+            <label>Nominal</label>
+            <input type="number" id="nominal">
+
+            <label>Jenis</label>
+            <select id="jenis">
+                <option value="keluar">Pengeluaran</option>
+                <option value="masuk">Pemasukan</option>
+                <option value="transfer">Transfer</option>
+            </select>
+
+            <label>Kategori</label>
+            <select id="kategori"></select>
+
+            <label>Dompet</label>
+            <select id="dompetSelect"></select>
+
+            <label>Catatan</label>
+            <textarea
+                id="catatan"
+                placeholder="Catatan">
+            </textarea>
+
+        </div>
+
+    </div>
+
+    <button
+        id="btnSimpan"
+        style="display:none">
+
+        Simpan Transaksi
+
+    </button>
+
+</div>
+
+<div id="loadingImport" class="loadingImport hidden">
+    <div class="loadingBox">
+        <div class="spinner"></div>
+        <h3>Memproses file...</h3>
+        <p>Sedang membaca PDF dan menyiapkan preview.</p>
+    </div>
+</div>
+
+<div class="bottomNav">
+
+            <button onclick="lihatDashboard()">
+              <span>🏠</span>
+              <small>Home</small>
+            </button>
+
+            <button onclick="lihatDompet()">
+              <span>💳</span>
+              <small>Dompet</small>
+            </button>
+
+            <button onclick="lihatLaporan()">
+              <span>📊</span>
+              <small>Laporan</small>
+            </button>
+
+            <button onclick="lihatProfil()">
+              <span>👤</span>
+              <small>Profil</small>
+            </button>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/importCore.js"></script>
+<script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="js/scanReceipt.js"></script>
+<script src="js/nav.js"></script>
+
+</body>
+
+</html>

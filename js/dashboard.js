@@ -51,6 +51,10 @@ function importTransaksi(){
     location.href = "import.html";
 }
 
+function scanStruk(){
+    location.href = "scanReceipt.html";
+}
+
 // ================ sembunyikan saldo ========================
   let saldoDisembunyikan =
   localStorage.getItem("hideSaldo") === "true";
