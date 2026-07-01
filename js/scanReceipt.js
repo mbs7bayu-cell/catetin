@@ -49,99 +49,163 @@ cameraInput.onchange = handleFile;
 
 galleryInput.onchange = handleFile;
 
-function ambilAngkaTerbesar(baris){
+function normalOCR(text){
+
+    return text
+        .replace(/\bbelania\b/gi,"belanja")
+        .replace(/\blotal\b/gi,"total")
+        .replace(/\biotal\b/gi,"total")
+        .replace(/\btotal\b/gi,"total")
+        .replace(/\bt0tal\b/gi,"total")
+        .replace(/\btofal\b/gi,"total");
+
+}
+
+function ambilNominalBaris(line){
 
     const angka =
-        baris.match(/\d[\d.,]*/g);
+        line.match(/\d[\d.,]*/g);
 
     if(!angka) return 0;
 
-    let terbesar = 0;
+    return normalNominal(
+        angka[angka.length - 1]
+    );
 
-    angka.forEach(a=>{
+}
 
-        const nilai =
-            normalNominal(a);
+function skorBaris(line){
 
-        if(nilai > terbesar){
+    const low = line.toLowerCase();
 
-            terbesar = nilai;
+    let skor = 0;
 
-        }
+    // ================= Positif =================
 
-    });
+    if(low.includes("grand total")) skor += 120;
 
-    return terbesar;
+    if(low.includes("total belanja")) skor += 110;
+
+    if(low.includes("jumlah bayar")) skor += 105;
+
+    if(low.includes("jumlah dibayar")) skor += 105;
+
+    if(low.includes("total pembayaran")) skor += 105;
+
+    // OCR kadang membaca Total menjadi Lotal/Iotal/T0tal
+    if(
+        /^total\b/.test(low) ||
+        /^[a-z]otal\b/.test(low) ||
+        /^t.tal\b/.test(low)
+    ){
+        skor += 90;
+    }
+
+    // ================= Negatif =================
+
+    if(low.includes("subtotal")) skor -= 120;
+
+    if(low.includes("item")) skor -= 100;
+
+    if(low.includes("disc")) skor -= 100;
+
+    if(low.includes("diskon")) skor -= 100;
+
+    if(low.includes("ppn")) skor -= 100;
+
+    if(low.includes("dpp")) skor -= 100;
+
+    if(low.includes("pajak")) skor -= 90;
+
+    if(low.includes("service")) skor -= 90;
+
+    if(low.includes("tunai")) skor -= 80;
+
+    if(low.includes("kembalian")) skor -= 80;
+
+    if(low.includes("a-poin")) skor -= 70;
+
+    if(low.includes("voucher")) skor -= 70;
+
+    if(low.includes("cashback")) skor -= 70;
+
+    if(low.includes("biaya")) skor -= 60;
+
+    return skor;
 
 }
 
 function extractNominal(text){
+
+    text = normalOCR(text);
 
     const lines = text
         .split("\n")
         .map(x => x.trim())
         .filter(Boolean);
 
-    const regexKeyword = [
+    let skorTerbaik = -999;
+    let nominal = 0;
 
-        /^grand total\b/i,
-        /^jumlah bayar\b/i,
-        /^jumlah dibayar\b/i,
-        /^total pembayaran\b/i,
-        /^total belanja\b/i,
-
-        /^\s*total\s+\d/i, // Total 73,333
-        /^\s*total\s*$/i   // Total (angka di baris berikutnya)
-
-    ];
-
-    // Cari berdasarkan keyword
-    for(let i=0;i<lines.length;i++){
+    for(let i = 0; i < lines.length; i++){
 
         const line = lines[i];
 
-        if(regexKeyword.some(r => r.test(line))){
+        let skor = skorBaris(line);
 
-            // angka pada baris yang sama
-            let nominal =
-                ambilAngkaTerbesar(line);
+        if(skor <= 0)
+            continue;
 
-            // kalau tidak ada, cek 2 baris berikutnya
-            if(!nominal){
+        const low = line.toLowerCase();
 
-                for(
-                    let j=i+1;
-                    j<=i+2 && j<lines.length;
-                    j++
-                ){
+        if(
+            low.includes("ppn") ||
+            low.includes("dpp") ||
+            low.includes("subtotal") ||
+            low.includes("diskon") ||
+            low.includes("disc")
+        ){
+            continue;
+        }
 
-                    nominal =
-                        ambilAngkaTerbesar(lines[j]);
+        // ================= BONUS POSISI =================
 
-                    if(nominal) break;
+        const posisi = i / lines.length;
 
-                }
+        // semakin bawah semakin tinggi
+        skor += posisi * 20;
 
-            }
+        // ================= AMBIL NOMINAL =================
 
-            if(nominal){
+        const angka = ambilNominalBaris(line);
 
-                return nominal;
+        if(!angka)
+            continue;
 
-            }
+        if(
+            skor > skorTerbaik ||
+            (skor === skorTerbaik && angka > nominal)
+        ){
+
+            skorTerbaik = skor;
+            nominal = angka;
 
         }
 
     }
 
+    if(nominal)
+        return nominal;
+
     // fallback
     const semua =
         text.match(/\d{1,3}(?:[.,]\d{3})+/g);
 
-    if(!semua) return 0;
+    if(!semua)
+        return 0;
 
     return normalNominal(
-        semua[semua.length-1]
+        semua[semua.length - 1]
     );
 
 }
@@ -198,12 +262,27 @@ function formatTanggal(tgl){
 
     }
 
-    // 06-30-2026 (MM-dd-yyyy)
+    // xx-xx-xxxx
     if(/^\d{2}-\d{2}-\d{4}$/.test(tgl)){
 
-        const [b,h,t] = tgl.split("-");
+        const [a,b,t] = tgl.split("-");
 
-        return `${t}-${b}-${h}`;
+        // Jika angka pertama > 12 berarti dd-MM-yyyy
+        if(Number(a) > 12){
+
+            return `${t}-${b}-${a}`;
+
+        }
+
+        // Jika angka kedua > 12 berarti MM-dd-yyyy
+        if(Number(b) > 12){
+
+            return `${t}-${a}-${b}`;
+
+        }
+
+        // Jika keduanya <=12, default Indonesia (dd-MM-yyyy)
+        return `${t}-${b}-${a}`;
 
     }
 
@@ -448,7 +527,7 @@ function tampilkanPreview(){
         transaksi.jam;
 
     document.getElementById("nominal").value =
-        transaksi.nominal;
+    "Rp " + transaksi.nominal.toLocaleString("id-ID");
 
     document.getElementById("jenis").value =
         transaksi.jenis;
@@ -472,7 +551,7 @@ btnSimpan.onclick = async()=>{
 
     transaksi.tanggal = tanggal.value;
     transaksi.jam = jam.value;
-    transaksi.nominal = Number(nominal.value);
+    transaksi.nominal = getNumber(nominal.value);
     transaksi.jenis = jenis.value;
     transaksi.kategori = kategori.value;
     transaksi.dompet = dompetSelect.value;
@@ -526,3 +605,5 @@ btnSimpan.onclick = async()=>{
     }
 
 }
+
+formatInputRupiah("nominal");

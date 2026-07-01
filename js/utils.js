@@ -40,6 +40,26 @@ function getNumber(value){
   return Number(value.replace(/\D/g, ""));
 }
 
+// ================== format rupiah ==================
+function formatInputRupiah(id){
+
+  const input = document.getElementById(id);
+
+  input.addEventListener("input", function () {
+
+    let angka = this.value.replace(/\D/g, "");
+
+    if(!angka){
+      this.value = "";
+      return;
+    }
+
+    this.value = "Rp " + new Intl.NumberFormat("id-ID").format(angka);
+
+  });
+
+}
+
 // ================ format tanggal ===================
 function formatTanggal(t){
 
