@@ -33,6 +33,102 @@ document.getElementById("btnSimpan");
 
 let transaksi = {};
 
+let worker = null;
+
+async function resizeImage(file){
+
+    const img =
+        await createImageBitmap(file);
+
+    const maxWidth = 1400;
+
+    const scale =
+        Math.min(
+            1,
+            maxWidth / img.width
+        );
+
+    const canvas =
+        document.createElement("canvas");
+
+    canvas.width =
+        img.width * scale;
+
+    canvas.height =
+        img.height * scale;
+
+    canvas
+        .getContext("2d")
+        .drawImage(
+            img,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+    return new Promise(resolve=>{
+
+        canvas.toBlob(
+
+            resolve,
+
+            "image/jpeg",
+
+            0.9
+
+        );
+
+    });
+
+}
+
+async function getWorker(){
+
+    if(worker)
+        return worker;
+
+    worker = await Tesseract.createWorker("ind");
+
+    await worker.setParameters({
+
+        tessedit_char_whitelist:
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,:/- "
+
+    });
+
+    return worker;
+
+}
+
+window.addEventListener(
+
+    "load",
+
+    ()=>{
+
+        getWorker();
+
+    }
+
+);
+
+window.addEventListener(
+
+    "beforeunload",
+
+    async()=>{
+
+        if(worker){
+
+            await worker.terminate();
+
+        }
+
+    }
+
+);
+
 btnCamera.onclick=()=>{
 
     cameraInput.click();
@@ -465,7 +561,11 @@ async function handleFile(){
 
 async function parseReceipt(file){
 
-    const text = await OCR(file);
+    const resized =
+    await resizeImage(file);
+
+    const text =
+    await OCR(resized);
 
     console.log(text);
 
@@ -505,14 +605,13 @@ function parseReceiptText(text){
 
 async function OCR(file){
 
+    const worker = await getWorker();
+
     const {
+
         data:{text}
-    } =
-    
-    await Tesseract.recognize(
-        file,
-        "ind+eng"
-    );
+
+    } = await worker.recognize(file);
 
     return text;
 
@@ -547,6 +646,53 @@ function tampilkanPreview(){
 
 }
 
+function validasiTransaksi(){
+
+    if(!transaksi.tanggal){
+        alert("Tanggal belum diisi.");
+        tanggal.focus();
+        return false;
+    }
+
+    if(transaksi.nominal <= 0){
+        alert("Nominal harus lebih dari Rp 0.");
+        nominal.focus();
+        return false;
+    }
+
+    if(!transaksi.kategori){
+        alert("Silakan pilih kategori.");
+        kategori.focus();
+        return false;
+    }
+
+    if(!transaksi.dompet){
+        alert("Silakan pilih dompet.");
+        dompetSelect.focus();
+        return false;
+    }
+    
+    const dompet = daftarDompet.find(
+        d => d.id_sumber == transaksi.dompet
+    );
+
+    if(
+        transaksi.jenis === "keluar" &&
+        dompet &&
+        transaksi.nominal > Number(dompet.saldo)
+    ){
+
+        alert(
+            `Saldo ${dompet.nama} tidak mencukupi.`
+        );
+
+        return false;
+    }
+
+    return true;
+
+}
+
 btnSimpan.onclick = async()=>{
 
     transaksi.tanggal = tanggal.value;
@@ -556,6 +702,10 @@ btnSimpan.onclick = async()=>{
     transaksi.kategori = kategori.value;
     transaksi.dompet = dompetSelect.value;
     transaksi.catatan = catatan.value;
+
+    if(!validasiTransaksi()){
+        return;
+    }
 
     btnSimpan.disabled = true;
     btnSimpan.textContent = "Menyimpan...";

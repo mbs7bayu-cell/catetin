@@ -24,8 +24,6 @@ async function loadKategori(){
 
         const hasil = await res.json();
 
-        console.log(hasil);
-
         kategoriUser[jenis] = hasil;
 
     }
@@ -47,9 +45,6 @@ async function loadDompet(provider){
 
     daftarDompet = data;
 
-    console.log(data);
-    console.log(Array.isArray(data));
-
     const select =
         document.getElementById("dompetSelect");
 
@@ -66,7 +61,7 @@ async function loadDompet(provider){
             document.createElement("option");
 
         option.value = dompet.id_sumber;
-        option.textContent = dompet.nama;
+        option.textContent = `${dompet.nama} - Rp ${dompet.saldo.toLocaleString("id-ID")}`;
 
         select.appendChild(option);
 
