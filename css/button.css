@@ -667,6 +667,7 @@ cursor:pointer;
 
 #calcToolbar.show{
     display:flex;
+    justify-content:space-between;
 }
 
 #calcToolbar button{
@@ -681,6 +682,7 @@ cursor:pointer;
     color:var(--text);
     margin:0;
     background:none;
+
 
 }
 
