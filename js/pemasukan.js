@@ -377,23 +377,32 @@ const preview =
 
 function formatEkspresiRealtime(input){
 
-    // posisi caret sebelum diformat
     const oldPos = input.selectionStart;
 
-    // value sebelum caret
     const beforeCaret =
         input.value.substring(0, oldPos);
 
-    // ekspresi tanpa titik
-    const exp =
-        input.value.replace(/\./g,"");
+    let exp = input.value
+        .replace(/Rp\s?/g,"")
+        .replace(/\./g,"");
 
-    // simpan ekspresi asli
     input.dataset.expression = exp;
 
-    // format ulang
-    const formatted =
-        formatEkspresi(exp);
+    let formatted;
+
+    // hanya angka
+    if(/^\d+$/.test(exp)){
+
+        formatted =
+            "Rp " +
+            Number(exp).toLocaleString("id-ID");
+
+    }else{
+
+        formatted =
+            formatEkspresi(exp);
+
+    }
 
     input.value = formatted;
 
@@ -431,6 +440,11 @@ function updatePreview(){
 
     const exp =
         nominal.dataset.expression;
+
+    if(!/[+\-*/()]/.test(exp)){
+        preview.classList.add("hidden");
+        return;
+    }
 
     if(!exp){
 
@@ -593,14 +607,24 @@ nominal.addEventListener("blur", () => {
 
 nominal.addEventListener("focus", () => {
 
-    if(nominal.dataset.expression){
+    const exp = nominal.dataset.expression;
+
+    if(!exp) return;
+
+    if(/^\d+$/.test(exp)){
 
         nominal.value =
-            formatEkspresi(nominal.dataset.expression);
+            "Rp " +
+            Number(exp).toLocaleString("id-ID");
 
-        updatePreview();
+    }else{
+
+        nominal.value =
+            formatEkspresi(exp);
 
     }
+
+    updatePreview();
 
 });
 
