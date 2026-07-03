@@ -647,3 +647,86 @@ cursor:pointer;
   box-shadow:0 2px 8px rgba(0,0,0,.08);
   margin-bottom: 10px;
 }
+
+/* ================== kalkulator ==================== */
+#calcToolbar{
+
+    display:none;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:8px;
+
+    margin-top:10px;
+
+    margin-bottom:10px;
+
+    width:100%;
+
+}
+
+#calcToolbar.show{
+    display:flex;
+}
+
+#calcToolbar button{
+
+    width:40px;
+    height:40px;
+
+    border:none;
+    border-radius:8px;
+
+    font-size:15px;
+    color:var(--text);
+    margin:0;
+    background:none;
+
+}
+
+#calcPreview{
+    margin-top:5px;
+    font-size:14px;
+    color:var(--textPreview);
+    font-weight:600;
+}
+
+.nominalWrapper{
+    position: relative;
+}
+
+#nominal{
+    padding-right: 48px;
+    margin-bottom: 0;
+}
+
+#btnFx{
+    position: absolute;
+
+    top: 50%;
+    right: 12px;
+
+    transform: translateY(-50%);
+
+    width: 30px;
+    height: 30px;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 0;
+    margin-top: 2px;
+    color: #888;
+
+}
+
+#labelCatatan{
+  margin-top: 15px;
+}

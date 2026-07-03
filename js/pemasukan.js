@@ -66,8 +66,7 @@ async function simpanPemasukan(){
   const kategori =
     document.getElementById("kategori").value.trim();
 
-  const nominal =
-    document.getElementById("nominal").value;
+  const inputNominal = document.getElementById("nominal");
 
   const catatan =
     document.getElementById("catatan").value.trim();
@@ -86,9 +85,27 @@ async function simpanPemasukan(){
     return;
   }
 
-  if(!nominal || Number(nominal) <= 0){
-    showToast("Nominal tidak valid");
-    return;
+  if(inputNominal.dataset.expression){
+
+      if(validasiEkspresi(inputNominal.dataset.expression)){
+
+          const hasil =
+              hitungEkspresi(inputNominal.dataset.expression);
+
+          inputNominal.value =
+              "Rp " +
+              hasil.toLocaleString("id-ID");
+
+      }
+
+  }
+
+  const nominal = inputNominal.value;
+  const nominalAngka = getNumber(nominal);
+
+  if(nominalAngka <= 0){
+      showToast("Nominal tidak valid");
+      return;
   }
 
   // ================= DATA =================
@@ -107,7 +124,7 @@ async function simpanPemasukan(){
 
     kategori: kategori.toLowerCase(),
 
-    nominal: getNumber(nominal),
+    nominal: nominalAngka,
 
     catatan: catatan
   };
@@ -116,6 +133,9 @@ async function simpanPemasukan(){
 
   btn.disabled = true;
   btn.innerText = "Menyimpan...";
+
+  toolbar.classList.remove("show");
+  preview.classList.add("hidden");
 
   try{
 
@@ -200,14 +220,22 @@ function formatInputRupiah(id){
 
 }
 
-formatInputRupiah("nominal");
+//formatInputRupiah("nominal");
 
 // ================= RESET FORM =================
 function resetForm(){
-  document.getElementById("sumberDana").value = "";
-  document.getElementById("kategori").value = "";
-  document.getElementById("nominal").value = "";
-  document.getElementById("catatan").value = "";
+
+    document.getElementById("sumberDana").value = "";
+    document.getElementById("kategori").value = "";
+
+    const nominal =
+        document.getElementById("nominal");
+
+    nominal.value = "";
+    nominal.dataset.expression = "";
+
+    document.getElementById("catatan").value = "";
+
 }
 
 // ================== load kategori ==========================
@@ -338,6 +366,353 @@ function showKategori(){
   dropdown.style.display =
     "block";
 }
+
+// ================== input kalkulator ==================
+const nominal = document.getElementById("nominal");
+const btnFx = document.getElementById("btnFx");
+const toolbar = document.getElementById("calcToolbar");
+const btnDone = document.getElementById("btnDone");
+const preview =
+    document.getElementById("calcPreview");
+
+function formatEkspresiRealtime(input){
+
+    // posisi caret sebelum diformat
+    const oldPos = input.selectionStart;
+
+    // value sebelum caret
+    const beforeCaret =
+        input.value.substring(0, oldPos);
+
+    // ekspresi tanpa titik
+    const exp =
+        input.value.replace(/\./g,"");
+
+    // simpan ekspresi asli
+    input.dataset.expression = exp;
+
+    // format ulang
+    const formatted =
+        formatEkspresi(exp);
+
+    input.value = formatted;
+
+    // hitung berapa karakter "asli"
+    // sebelum caret
+    const rawBeforeCaret =
+        beforeCaret.replace(/\./g,"");
+
+    // cari posisi caret baru
+    let rawCount = 0;
+    let newPos = formatted.length;
+
+    for(let i=0;i<formatted.length;i++){
+
+        if(/\d/.test(formatted[i])){
+
+            rawCount++;
+
+        }
+
+        if(rawCount >= rawBeforeCaret.length){
+
+            newPos = i + 1;
+            break;
+
+        }
+
+    }
+
+    input.setSelectionRange(newPos,newPos);
+
+}
+
+function updatePreview(){
+
+    const exp =
+        nominal.dataset.expression;
+
+    if(!exp){
+
+        preview.classList.add("hidden");
+        return;
+
+    }
+
+    try{
+
+        if(!validasiEkspresi(exp)){
+            preview.classList.remove("hidden");
+            preview.textContent =
+                "Perhitungan belum lengkap";
+            return;
+        }
+
+        const hasil =
+            hitungEkspresi(exp);
+
+        preview.classList.remove("hidden");
+
+        preview.textContent =
+            "= Rp " +
+            hasil.toLocaleString("id-ID");
+
+    }catch{
+
+        preview.classList.remove("hidden");
+
+        preview.textContent =
+            "Perhitungan belum lengkap";
+
+    }
+
+}
+
+btnFx.addEventListener("click", (e) => {
+
+    e.preventDefault();
+
+    toolbar.classList.toggle("show");
+
+    nominal.focus();
+
+});
+
+toolbar.addEventListener("click", (e) => {
+
+    const op = e.target.dataset.op;
+
+    if (!op) return;
+
+    if (op === "backspace") {
+
+        const start = nominal.selectionStart;
+        const end = nominal.selectionEnd;
+
+        if (start === end && start > 0) {
+            nominal.value =
+                nominal.value.slice(0, start - 1) +
+                nominal.value.slice(end);
+            
+            nominal.dataset.expression = nominal.value;
+            updatePreview();
+
+            nominal.setSelectionRange(start - 1, start - 1);
+        }
+
+        return;
+    }
+
+    if(op === "clear"){
+
+        nominal.value = "";
+        nominal.dataset.expression = "";
+
+        updatePreview();
+
+        nominal.focus();
+
+        return;
+    }
+
+    insertAtCursor(op);
+
+});
+
+document.addEventListener("click", (e) => {
+
+    const wrapper = document.querySelector(".nominalWrapper");
+
+    if(
+        !wrapper.contains(e.target) &&
+        !toolbar.contains(e.target)
+    ){
+        toolbar.classList.remove("show");
+        preview.classList.add("hidden");
+    }
+
+});
+
+function insertAtCursor(text){
+
+    const start = nominal.selectionStart;
+    const end = nominal.selectionEnd;
+
+    nominal.value =
+        nominal.value.substring(0,start) +
+        text +
+        nominal.value.substring(end);
+
+    nominal.dataset.expression = nominal.value;
+
+    const pos = start + text.length;
+
+    nominal.focus();
+    nominal.setSelectionRange(pos,pos);
+
+    updatePreview();
+
+}
+
+nominal.addEventListener("input", () => {
+
+    formatEkspresiRealtime(nominal);
+
+    updatePreview();
+
+});
+
+nominal.addEventListener("blur", () => {
+
+    if (!nominal.dataset.expression) return;
+
+    try{
+
+        if(!validasiEkspresi(nominal.dataset.expression)){
+            showToast("Perhitungan tidak valid");
+            return;
+        }
+
+        const hasil =
+            hitungEkspresi(nominal.dataset.expression);
+
+        nominal.value =
+            "Rp " +
+            hasil.toLocaleString("id-ID");
+
+        preview.classList.add("hidden");
+
+
+    }catch(e){
+
+        showToast("Perhitungan tidak valid");
+
+    }
+
+});
+
+nominal.addEventListener("focus", () => {
+
+    if(nominal.dataset.expression){
+
+        nominal.value =
+            formatEkspresi(nominal.dataset.expression);
+
+        updatePreview();
+
+    }
+
+});
+
+// ================== hitung ekspresi ==================
+function hitungEkspresi(exp){
+
+    exp = exp.replace(/\./g, "");   // hilangkan pemisah ribuan
+    exp = exp.replace(/×/g,"*");
+    exp = exp.replace(/÷/g,"/");
+
+    return Function("return " + exp)();
+
+}
+
+function validasiEkspresi(exp){
+
+    exp = exp.trim();
+
+    // kosong
+    if(exp === "") return false;
+
+    // hanya angka, operator, titik dan kurung
+    if(!/^[0-9+\-*/().\s]+$/.test(exp)){
+        return false;
+    }
+
+    // tidak boleh diawali * atau /
+    if(/^[*/]/.test(exp)){
+        return false;
+    }
+
+    // tidak boleh diakhiri operator
+    if(/[+\-*/.]$/.test(exp)){
+        return false;
+    }
+
+    // operator ganda
+    if(/[+\-*/]{2,}/.test(exp)){
+        return false;
+    }
+
+    // kurung harus seimbang
+    let jumlah = 0;
+
+    for(const c of exp){
+
+        if(c==="(") jumlah++;
+
+        if(c===")"){
+
+            jumlah--;
+
+            if(jumlah < 0){
+                return false;
+            }
+
+        }
+
+    }
+
+    if(jumlah !== 0){
+        return false;
+    }
+
+    return true;
+
+}
+
+function formatEkspresi(exp){
+
+    let hasil = "";
+    let angka = "";
+
+    for(const c of exp){
+
+        if(/\d/.test(c)){
+
+            angka += c;
+
+        }else{
+
+            if(angka){
+
+                hasil += Number(angka)
+                    .toLocaleString("id-ID");
+
+                angka = "";
+
+            }
+
+            hasil += c;
+
+        }
+
+    }
+
+    if(angka){
+
+        hasil += Number(angka)
+            .toLocaleString("id-ID");
+
+    }
+
+    return hasil;
+
+}
+
+document.querySelectorAll("#calcToolbar button").forEach(btn=>{
+    btn.addEventListener("mousedown", e=>{
+        e.preventDefault();
+    });
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   loadTheme();

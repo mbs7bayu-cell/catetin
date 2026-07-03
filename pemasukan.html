@@ -41,12 +41,43 @@
 
     </div>
 
+
+
     <label for="nominal">Nominal</label>
-    <input id="nominal" type="text" inputmode="numeric" placeholder="0">
+    <div class="nominalWrapper">
 
-    <label for="catatan">Catatan</label>
-    <textarea id="catatan" placeholder="Catatan"></textarea>
+        <input
+            id="nominal"
+            type="text"
+            inputmode="numeric"
+            data-expression=""
+            placeholder="0">
 
+        <button type="button" id="btnFx">+</button>
+
+    </div>
+
+        <p id="calcPreview" class="hidden"></p>
+
+
+    <div id="calcToolbar" hidden>
+        <button data-op="+">+</button>
+        <button data-op="-">-</button>
+        <button data-op="*">×</button>
+        <button data-op="/">÷</button>
+        <button data-op="(">(</button>
+        <button data-op=")">)</button>
+        <button data-op="backspace">🡐</button>
+        <button data-op="clear">C</button>
+    </div>
+
+    <div id="labelCatatan">
+        
+        <label for="catatan">Catatan</label>
+        <textarea id="catatan" placeholder="Catatan"></textarea>
+
+    </div>
+    
     <p id="status"></p>
 
     <!-- 🔥 BUTTON PAKAI FUNCTION -->
