@@ -402,6 +402,13 @@ async function simpanKredit(){
 
     if(hasil.ok){
 
+      //update dashboard dan laporan
+      localStorage.removeItem("dompetCache");
+
+      sessionStorage.removeItem("dompet");
+      sessionStorage.removeItem("laporan");
+      localStorage.removeItem("dashboard");
+
       btn.innerText = "Berhasil ✔";
 
       showToast("Simpan kredit berhasil");
@@ -579,6 +586,12 @@ const res = await fetch(API, {
 const hasil = await res.json();
 
 if(hasil.ok){
+
+  localStorage.removeItem("dompetCache");
+
+      sessionStorage.removeItem("dompet");
+      sessionStorage.removeItem("laporan");
+      localStorage.removeItem("dashboard");
 
   showToast("Kredit berhasil dihapus");
 
