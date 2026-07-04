@@ -2,54 +2,73 @@
 
 async function loadDompet(){
 
-  const user = JSON.parse(
-    sessionStorage.getItem("user") ||
-    localStorage.getItem("user") ||
-    localStorage.getItem("activeUser")
-  );
-
-  if(!user){
-
-    location.href = "login.html";
-  }
-
   try{
 
-    const res = await fetch(
-      `${API}?mode=dompet&userId=${user.userId}`
-    );
+    const cache =
+      sessionStorage.getItem("dompet");
 
-    const data = await res.json();
+    let data = [];
 
-    const select =
-      document.getElementById("sumberDana");
+    if(cache){
 
-    select.innerHTML = `
-      <option value="">
-        -- pilih dompet --
-      </option>
-    `;
+      data = JSON.parse(cache);
 
-    data.forEach(d => {
+    }else{
 
-      const opt =
-        document.createElement("option");
+      const user = JSON.parse(
+        sessionStorage.getItem("user") ||
+        localStorage.getItem("user") ||
+        localStorage.getItem("activeUser")
+      );
 
-      opt.value = d.id_sumber;
+      if(!user){
 
-      opt.textContent =
-        `${d.nama} (${d.tipe}) - Rp ${Number(d.saldo).toLocaleString("id-ID")}`;
+        location.href = "login.html";
+      }
 
-      select.appendChild(opt);
+      const res = await fetch(
+        `${API}?mode=dompet&userId=${user.userId}`
+      );
 
-    });
+      data = await res.json();
+
+      sessionStorage.setItem(
+        "dompet",
+        JSON.stringify(data)
+      );
+    
+    }
+
+      const select =
+        document.getElementById("sumberDana");
+
+      select.innerHTML = `
+        <option value="">
+          -- pilih dompet --
+        </option>
+      `;
+
+      data.forEach(d => {
+
+        const opt =
+          document.createElement("option");
+
+        opt.value = d.id_sumber;
+
+        opt.textContent =
+          `${d.nama} (${d.tipe}) - Rp ${Number(d.saldo).toLocaleString("id-ID")}`;
+
+        select.appendChild(opt);
+
+      });
 
   }catch(err){
 
-    console.error(err);
+      console.error(err);
 
-    showToast("Gagal load dompet");
+      showToast("Gagal load dompet");
   }
+  
 }
 
 // ================= SIMPAN =================
@@ -172,6 +191,11 @@ async function simpanPengeluaran(){
       "</b> berhasil disimpan.";
 
     if(hasil.ok){
+
+      //update dashboard dan laporan
+      sessionStorage.removeItem("dompet");
+      sessionStorage.removeItem("laporan");
+      localStorage.removeItem("dashboard");
 
       btn.innerText = "Berhasil ✔";
 

@@ -353,7 +353,25 @@ async function loadDashboard(){
       JSON.stringify(hasil)
     );
 
+        // simpan daftar dompet
+    if (hasil.dompet) {
+      sessionStorage.setItem(
+        "dompet",
+        JSON.stringify(hasil.dompet)
+      );
+    }
+
     renderDashboard(hasil);
+
+    // cek dompet dari hasil server
+    if (!hasil.dompet || hasil.dompet.length === 0) {
+
+      showToast("Buat minimal 1 dompet terlebih dahulu");
+
+      setTimeout(() => {
+        location.href = "dompet.html";
+      }, 1000);
+    }
 
   }catch(err){
 
@@ -390,6 +408,22 @@ function showSkeleton(){
   document
     .getElementById("listTransaksi")
     .classList.add("skeleton-card");
+
+  const list = document.getElementById("listTransaksi");
+  const saldo = document.getElementById("saldo");
+  const totalMasuk = document.getElementById("totalMasukBulan");
+  const totalKeluar = document.getElementById("totalKeluarBulan");
+
+  list.classList.add("skeleton-card");
+  saldo.classList.add("skeleton-saldo");
+  totalMasuk.classList.add("skeleton-text");
+  totalKeluar.classList.add("skeleton-text");
+
+  // kosongkan transaksi lama
+  list.innerHTML = "";
+  saldo.innerHTML = "";
+  totalMasuk.innerHTML = "";
+  totalKeluar.innerHTML = "";
 
 }
 
@@ -477,6 +511,9 @@ async function hapusTransaksi(id){
     const hasil = await res.json();
 
     if(hasil.success){
+      sessionStorage.removeItem("dompet");
+      sessionStorage.removeItem("laporan");
+      localStorage.removeItem("dashboard");
       showToast("Transaksi berhasil dihapus");
       loadDashboard();
     }else{
@@ -519,89 +556,55 @@ window.open(link, "_blank");
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-loadThemeDashboard();
+  loadThemeDashboard();
 
-const pesan =
-sessionStorage.getItem("toastMessage");
+  const pesan = sessionStorage.getItem("toastMessage");
 
-if (pesan) {
-  showToast(pesan);
-  sessionStorage.removeItem("toastMessage");
-}
+  if (pesan) {
+    showToast(pesan);
+    sessionStorage.removeItem("toastMessage");
+  }
 
-if (user) {
+  if (user) {
 
-  const res = await fetch(
-    API + "?mode=getProfil&id_user=" + user.userId
-  );
-
-  const r = await res.json();
-
-  if (r.ok) {
-
-    const profil = r.data;
-
-    if (!profil.nama || !profil.gmail) {
-
-      showToast(
-        "Lengkapi profil terlebih dahulu"
-      );
-
-      setTimeout(() => {
-        location.href = "profil.html";
-      }, 1000);
-
-      return;
-    }
-
-    // cek dompet
-    const resDompet = await fetch(
-      API +
-      "?mode=dompet&userId=" +
-      user.userId
+    const res = await fetch(
+      API + "?mode=getProfil&id_user=" + user.userId
     );
 
-    const dataDompet =
-      await resDompet.json();
+    const r = await res.json();
 
-    if (
-      !Array.isArray(dataDompet) ||
-      dataDompet.length === 0
-    ) {
+    if (r.ok) {
 
-      showToast(
-        "Buat minimal 1 dompet terlebih dahulu"
-      );
+      const profil = r.data;
 
-      setTimeout(() => {
-        location.href = "dompet.html";
-      }, 1000);
+      if (!profil.nama || !profil.gmail) {
 
-      return;
+        showToast("Lengkapi profil terlebih dahulu");
+
+        setTimeout(() => {
+          location.href = "profil.html";
+        }, 1000);
+
+        return;
+      }
+
+      document.getElementById("userInfo").innerHTML =
+        `Login : <b>${profil.nama || user.noHp}</b>`;
     }
 
-    document.getElementById("userInfo").innerHTML =
-     `Login : <b>`  + profil.nama || user.noHp + `</b>`;
   }
-}
 
+  const btn = document.getElementById("btnToggleSaldo");
 
-const btn =
-document.getElementById(
-"btnToggleSaldo"
-);
+  if (btn) {
+    btn.textContent =
+      saldoDisembunyikan
+        ? "🙈"
+        : "👁";
+  }
 
-if(btn){
+  await loadDashboard();
 
-  btn.textContent =
-    saldoDisembunyikan
-      ? "🙈"
-      : "👁";
-
-}
-
-  loadDashboard();
-  
 });
 
 window.addEventListener("pageshow", () => {

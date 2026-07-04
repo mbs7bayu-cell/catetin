@@ -121,251 +121,49 @@ function parseTanggal(trx){
 
 async function loadLaporan(){
 
-  const saldoEl =
-    document.getElementById("sisaSaldo");
-
-  const masukEl =
-    document.getElementById("totalMasuk");
-
-  const keluarEl =
-    document.getElementById("totalKeluar");
-
-  const listBulanEl =
-    document.getElementById("listBulan");
+  const saldoEl = document.getElementById("sisaSaldo");
+  const masukEl = document.getElementById("totalMasuk");
+  const keluarEl = document.getElementById("totalKeluar");
+  const listBulanEl = document.getElementById("listBulan");
 
   saldoEl.classList.add("skeleton-text");
   masukEl.classList.add("skeleton-text");
   keluarEl.classList.add("skeleton-text");
   listBulanEl.classList.add("skeleton-card");
 
+  const cache = sessionStorage.getItem("laporan");
+
+  if(cache){
+
+    renderLaporan(
+      JSON.parse(cache)
+    );
+
+    return;
+  }
+
   try{
 
-    const res =
-      await fetch(
+    const res = await fetch(
+      API + "?mode=laporan&userId=" + user.userId
+    );
 
-        API +
+    const hasil = await res.json();
 
-        "?mode=laporan&userId=" +
+    sessionStorage.setItem(
+      "laporan",
+      JSON.stringify(hasil)
+    );
 
-        user.userId
-      );
-
-    const hasil =
-      await res.json();
-
-    // ================= SUMMARY =================
-
-    document.getElementById("totalMasuk")
-      .innerText =
-      formatRupiah(
-        hasil.summary.masuk || 0
-      );
-
-    document.getElementById("totalKeluar")
-      .innerText =
-      formatRupiah(
-        hasil.summary.keluar || 0
-      );
-
-    document.getElementById("sisaSaldo")
-      .innerText =
-      formatRupiah(
-        hasil.summary.saldo || 0
-      );
-
-    saldoEl.classList.remove("skeleton-text");
-    masukEl.classList.remove("skeleton-text");
-    keluarEl.classList.remove("skeleton-text");
-    
-
-    // ================= LIST BULAN =================
-
-    const listBulan =
-      document.getElementById("listBulan");
-
-    listBulan.innerHTML = "";
-
-    let activeBulan = null;
-    let activeCard = null;
-
-    const bulanKeys =
-      Object.keys(hasil.bulan || {});
-
-    listBulanEl.classList.remove("skeleton-card");
-
-    if (bulanKeys.length === 0) {
-
-      listBulan.innerHTML = `
-        
-          <p>Belum ada transaksi</p>
-        
-      `;
-
-      return;
-    }
-
-    bulanKeys
-      .reverse()
-      .forEach(key => {
-
-      const card =
-        document.createElement("div");
-
-      card.className =
-        "card";
-
-      card.style.cursor =
-        "pointer";
-
-      card.style.marginBottom =
-        "10px";
-
-      card.innerHTML = `
-
-        <strong>
-          ${namaBulan(key)}
-        </strong>
-
-      `;
-
-    
-
-      card.onclick = () => {
-
-        limitTanggal = 5;
-        limitTransaksi = 5;
-
-        const cardListTanggal =
-          document.getElementById("cardListTanggal");
-
-        // hapus warna bulan sebelumnya
-        if(activeCard && activeCard !== card){
-
-          activeCard.classList.remove(
-            "cardBulanAktif"
-          );
-        }
-
-        // ================= TOGGLE =================
-
-        if(activeBulan === key){
-
-          activeBulan = null;
-
-          card.classList.remove(
-            "cardBulanAktif"
-          );
-
-          activeCard = null;
-
-          document.getElementById("listTanggal")
-            .innerHTML = "";
-
-          cardListTanggal.style.display = "none";
-
-          document.getElementById(
-            "menuLaporan"
-          ).style.display = "none";
-
-          return;
-        }
-
-        activeBulan = key;
-
-        card.classList.add(
-          "cardBulanAktif"
-        );
-
-        activeCard = card;
-
-        cardListTanggal.style.display = "block";
-
-        document.getElementById(
-          "menuLaporan"
-        ).style.display = "flex";
-
-        // ================= HITUNG SUMMARY =================
-
-        let totalMasuk = 0;
-        let totalKeluar = 0;
-
-        hasil.bulan[key].forEach(trx => {
-
-          if(trx.jenis === "masuk"){
-
-            totalMasuk +=
-              Number(trx.nominal);
-          }
-
-          if(trx.jenis === "keluar"){
-
-            totalKeluar +=
-              Number(trx.nominal);
-          }
-
-        });
-
-        // ================= RENDER =================
-
-        document.getElementById("listTanggal")
-          .innerHTML = `
-          
-          <div class="summaryBulanan">
-
-            <div class="summaryCard masuk">
-
-              <div>Pemasukan</div>
-
-              <strong>
-                ${formatRupiah(totalMasuk)}
-              </strong>
-
-            </div>
-
-            <div class="summaryCard keluar">
-
-              <div>Pengeluaran</div>
-
-              <strong>
-                ${formatRupiah(totalKeluar)}
-              </strong>
-
-            </div>
-
-          </div>
-
-          <div class="btnDownloadPdf">
-            <button
-              class="btnPdf"
-              onclick="downloadLaporanPDF('${key}')"
-            >
-              📄 Download PDF
-            </button>
-          </div>
-
-        `;
-
-        renderTanggal(
-          hasil.bulan[key]
-        );
-
-        renderKategori(
-          hasil.bulan[key]
-        );
-      };
-
-      listBulan.appendChild(card);
-
-    });
+    renderLaporan(hasil);
 
   }catch(err){
 
     console.error(err);
+    showToast("Gagal load laporan");
 
-    showToast(
-      "Gagal load laporan"
-    );
   }
+
 }
 
 // ================= RENDER KATEGORI =================
@@ -886,6 +684,219 @@ function updateButtonLoadMoreTanggal(){
     totalTanggal <= 5
       ? "none"
       : "block";
+}
+
+function renderLaporan(hasil){
+
+  const saldoEl = document.getElementById("sisaSaldo");
+  const masukEl = document.getElementById("totalMasuk");
+  const keluarEl = document.getElementById("totalKeluar");
+  const listBulanEl = document.getElementById("listBulan");
+
+   // ================= SUMMARY =================
+
+    document.getElementById("totalMasuk")
+      .innerText =
+      formatRupiah(
+        hasil.summary.masuk || 0
+      );
+
+    document.getElementById("totalKeluar")
+      .innerText =
+      formatRupiah(
+        hasil.summary.keluar || 0
+      );
+
+    document.getElementById("sisaSaldo")
+      .innerText =
+      formatRupiah(
+        hasil.summary.saldo || 0
+      );
+
+    saldoEl.classList.remove("skeleton-text");
+    masukEl.classList.remove("skeleton-text");
+    keluarEl.classList.remove("skeleton-text");
+    
+
+    // ================= LIST BULAN =================
+
+    const listBulan =
+      document.getElementById("listBulan");
+
+    listBulan.innerHTML = "";
+
+    let activeBulan = null;
+    let activeCard = null;
+
+    const bulanKeys =
+      Object.keys(hasil.bulan || {});
+
+    listBulanEl.classList.remove("skeleton-card");
+
+    if (bulanKeys.length === 0) {
+
+      listBulan.innerHTML = `
+        
+          <p>Belum ada transaksi</p>
+        
+      `;
+
+      return;
+    }
+
+    bulanKeys
+      .reverse()
+      .forEach(key => {
+
+      const card =
+        document.createElement("div");
+
+      card.className =
+        "card";
+
+      card.style.cursor =
+        "pointer";
+
+      card.style.marginBottom =
+        "10px";
+
+      card.innerHTML = `
+
+        <strong>
+          ${namaBulan(key)}
+        </strong>
+
+      `;
+
+    
+
+      card.onclick = () => {
+
+        limitTanggal = 5;
+        limitTransaksi = 5;
+
+        const cardListTanggal =
+          document.getElementById("cardListTanggal");
+
+        // hapus warna bulan sebelumnya
+        if(activeCard && activeCard !== card){
+
+          activeCard.classList.remove(
+            "cardBulanAktif"
+          );
+        }
+
+        // ================= TOGGLE =================
+
+        if(activeBulan === key){
+
+          activeBulan = null;
+
+          card.classList.remove(
+            "cardBulanAktif"
+          );
+
+          activeCard = null;
+
+          document.getElementById("listTanggal")
+            .innerHTML = "";
+
+          cardListTanggal.style.display = "none";
+
+          document.getElementById(
+            "menuLaporan"
+          ).style.display = "none";
+
+          return;
+        }
+
+        activeBulan = key;
+
+        card.classList.add(
+          "cardBulanAktif"
+        );
+
+        activeCard = card;
+
+        cardListTanggal.style.display = "block";
+
+        document.getElementById(
+          "menuLaporan"
+        ).style.display = "flex";
+
+        // ================= HITUNG SUMMARY =================
+
+        let totalMasuk = 0;
+        let totalKeluar = 0;
+
+        hasil.bulan[key].forEach(trx => {
+
+          if(trx.jenis === "masuk"){
+
+            totalMasuk +=
+              Number(trx.nominal);
+          }
+
+          if(trx.jenis === "keluar"){
+
+            totalKeluar +=
+              Number(trx.nominal);
+          }
+
+        });
+
+        // ================= RENDER =================
+
+        document.getElementById("listTanggal")
+          .innerHTML = `
+          
+          <div class="summaryBulanan">
+
+            <div class="summaryCard masuk">
+
+              <div>Pemasukan</div>
+
+              <strong>
+                ${formatRupiah(totalMasuk)}
+              </strong>
+
+            </div>
+
+            <div class="summaryCard keluar">
+
+              <div>Pengeluaran</div>
+
+              <strong>
+                ${formatRupiah(totalKeluar)}
+              </strong>
+
+            </div>
+
+          </div>
+
+          <div class="btnDownloadPdf">
+            <button
+              class="btnPdf"
+              onclick="downloadLaporanPDF('${key}')"
+            >
+              📄 Download PDF
+            </button>
+          </div>
+
+        `;
+
+        renderTanggal(
+          hasil.bulan[key]
+        );
+
+        renderKategori(
+          hasil.bulan[key]
+        );
+      };
+
+      listBulan.appendChild(card);
+
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

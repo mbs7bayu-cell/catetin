@@ -1,23 +1,41 @@
 async function loadDompet(){
 
-  const user = JSON.parse(
-    sessionStorage.getItem("user") ||
-    localStorage.getItem("user") ||
-    localStorage.getItem("activeUser")
-  );
+  try {
+    
+    const cache =
+      sessionStorage.getItem("dompet");
 
-  if(!user){
+    let data = [];
 
-    location.href = "login.html";
-  }
+    if(cache){
 
-  try{
+      data = JSON.parse(cache);
 
-    const res = await fetch(
-      `${API}?mode=dompet&userId=${user.userId}`
-    );
+    }else{
 
-    const data = await res.json();
+      const user = JSON.parse(
+        sessionStorage.getItem("user") ||
+        localStorage.getItem("user") ||
+        localStorage.getItem("activeUser")
+      );
+
+      if (!user) {
+        location.href = "login.html";
+        return;
+      }
+
+      const res = await fetch(
+        `${API}?mode=dompet&userId=${user.userId}`
+      );
+
+      data = await res.json();
+
+      sessionStorage.setItem(
+        "dompet",
+        JSON.stringify(data)
+      );
+
+    }
 
     const select =
       document.getElementById("sumberDana");
@@ -28,7 +46,7 @@ async function loadDompet(){
       </option>
     `;
 
-    data.forEach(d => {
+    data.forEach(d=>{
 
       const opt =
         document.createElement("option");
@@ -44,9 +62,11 @@ async function loadDompet(){
 
   }catch(err){
 
-    console.error(err);
-    showToast("Gagal load dompet");
+        console.error(err);
+
+        showToast("Gagal load dompet");
   }
+
 }
 
 async function simpanPemasukan(){
@@ -159,6 +179,11 @@ async function simpanPemasukan(){
       "</b> berhasil disimpan.";
 
     if(hasil.ok){
+
+      //update dashboard dan laporan
+      sessionStorage.removeItem("dompet");
+      sessionStorage.removeItem("laporan");
+      localStorage.removeItem("dashboard");
 
       btn.innerText = "Berhasil ✔";
 

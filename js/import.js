@@ -431,6 +431,11 @@ btnImport.onclick = async () => {
 
         setTimeout(() => {
 
+            // Hapus cache agar dashboard mengambil data terbaru
+            sessionStorage.removeItem("dompet");
+            sessionStorage.removeItem("laporan");
+            localStorage.removeItem("dashboard");
+
             const pesan = 
         `✅ Berhasil import ${hasil.jumlah} transaksi, cek pada laporan sesuai tanggal transaksi dibuat.`;
             

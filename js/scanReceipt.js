@@ -729,6 +729,11 @@ btnSimpan.onclick = async()=>{
 
         if(hasil.success){
 
+            // Hapus cache agar dashboard mengambil data terbaru
+            sessionStorage.removeItem("dompet");
+            sessionStorage.removeItem("laporan");
+            localStorage.removeItem("dashboard");
+
             sessionStorage.setItem(
                 "toastMessage",
                 "✅ Transaksi berhasil disimpan."

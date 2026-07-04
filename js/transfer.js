@@ -9,69 +9,88 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadDompet(){
 
-  const user = JSON.parse(
-    sessionStorage.getItem("user") ||
-    localStorage.getItem("user") ||
-    localStorage.getItem("activeUser")
-  );
 
-  if(!user){
+try{
 
-    location.href = "login.html";
-  }
+    const cache =
+      sessionStorage.getItem("dompet");
 
-  try{
+    let data = [];
 
-      const res = await fetch(
-        `${API}?mode=dompet&userId=${user.userId}`
+    if(cache){
+
+      data = JSON.parse(cache);
+
+    }else{
+
+      const user = JSON.parse(
+        sessionStorage.getItem("user") ||
+        localStorage.getItem("user") ||
+        localStorage.getItem("activeUser")
       );
 
-      const data = await res.json();
+      if(!user){
 
-      const asal =
-        document.getElementById("sumberAsal");
+        location.href = "login.html";
+      }
 
-      const tujuan =
-        document.getElementById("sumberTujuan");
+          const res = await fetch(
+            `${API}?mode=dompet&userId=${user.userId}`
+          );
 
-      asal.innerHTML = `
-        <option value="">
-          -- pilih dompet --
-        </option>
-      `;
+          data = await res.json();
 
-      tujuan.innerHTML = `
-        <option value="">
-          -- pilih dompet --
-        </option>
-      `;
+          sessionStorage.setItem(
+            "dompet",
+            JSON.stringify(data)
+          );
 
-    data.forEach(d => {
+    }
 
-      const text =
-        `${d.nama} - Rp ${Number(d.saldo).toLocaleString("id-ID")}`;
+          const asal =
+            document.getElementById("sumberAsal");
 
-      const opt1 =
-        document.createElement("option");
+          const tujuan =
+            document.getElementById("sumberTujuan");
 
-      opt1.value = d.id_sumber;
-      opt1.textContent = text;
+          asal.innerHTML = `
+            <option value="">
+              -- pilih dompet --
+            </option>
+          `;
 
-      asal.appendChild(opt1);
+          tujuan.innerHTML = `
+            <option value="">
+              -- pilih dompet --
+            </option>
+          `;
 
-      const opt2 =
-        document.createElement("option");
+        data.forEach(d => {
 
-      opt2.value = d.id_sumber;
-      opt2.textContent = text;
+          const text =
+            `${d.nama} - Rp ${Number(d.saldo).toLocaleString("id-ID")}`;
 
-      tujuan.appendChild(opt2);
+          const opt1 =
+            document.createElement("option");
 
-    });
+          opt1.value = d.id_sumber;
+          opt1.textContent = text;
+
+          asal.appendChild(opt1);
+
+          const opt2 =
+            document.createElement("option");
+
+          opt2.value = d.id_sumber;
+          opt2.textContent = text;
+
+          tujuan.appendChild(opt2);
+
+        });
 
   }catch(err){
 
-    console.error(err);
+        console.error(err);
 
   }
 }
@@ -174,6 +193,11 @@ async function simpanTransfer(){
       "✅ Transfer sebesar <b>Rp " + new Intl.NumberFormat("id-ID").format(nominal) + "</b> berhasil disimpan.";
 
     if(hasil.ok){
+
+      //update dashboard dan laporan
+      sessionStorage.removeItem("dompet");
+      sessionStorage.removeItem("laporan");
+      localStorage.removeItem("dashboard");
 
       btn.innerText = "Berhasil ✔";
 

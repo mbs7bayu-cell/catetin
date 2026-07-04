@@ -338,6 +338,7 @@ cursor:pointer;
   justify-content: center;
 
   z-index: 999;
+
 }
 
 .modalContent{
@@ -348,9 +349,16 @@ cursor:pointer;
 
   max-width: 320px;
 
+  max-height: calc(100dvh - 80px);
+    overflow-y: auto;
+
+    margin-bottom: 80px;
+
+
   border-radius: 16px;
 
   padding: 16px;
+
 }
 
 .modalContent input,
