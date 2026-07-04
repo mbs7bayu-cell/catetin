@@ -193,6 +193,8 @@ async function simpanPengeluaran(){
     if(hasil.ok){
 
       //update dashboard dan laporan
+          localStorage.removeItem("dompetCache");
+
       sessionStorage.removeItem("dompet");
       sessionStorage.removeItem("laporan");
       localStorage.removeItem("dashboard");

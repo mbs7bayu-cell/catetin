@@ -511,6 +511,8 @@ async function hapusTransaksi(id){
     const hasil = await res.json();
 
     if(hasil.success){
+          localStorage.removeItem("dompetCache");
+
       sessionStorage.removeItem("dompet");
       sessionStorage.removeItem("laporan");
       localStorage.removeItem("dashboard");

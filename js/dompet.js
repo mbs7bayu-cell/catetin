@@ -14,9 +14,12 @@ async function loadData() {
 
   }else{
 
-    document
-      .getElementById("dompetList")
-      .classList.add("skeleton-card");
+    const list =
+    document.getElementById("dompetList");
+
+    list.innerHTML = "";
+
+    list.classList.add("skeleton-card");
 
   }
 
@@ -195,6 +198,8 @@ async function simpanEditDompet(){
     await res.json();
 
   if(hasil.ok){
+
+    localStorage.removeItem("dompetCache");
 
     showToast("Dompet berhasil diupdate");
 
