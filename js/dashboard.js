@@ -191,14 +191,14 @@ function renderDashboard(hasil){
 
   if (hasil.jumlahKredit > 0) {
 
-    infoKredit.innerText =
+    infoKredit.innerHTML =
       saldoDisembunyikan
         ? ""
-        : `🔴 Kredit aktif ${hasil.jumlahKredit} • Sisa Rp ${formatRupiah(hasil.totalSisaKredit)}`;
+        : `<span class="dot"></span>Kredit aktif ${hasil.jumlahKredit} • Sisa Rp ${formatRupiah(hasil.totalSisaKredit)}`;
 
   } else {
 
-    infoKredit.innerText = "";
+    infoKredit.innerHTML = "";
 
   }
 
