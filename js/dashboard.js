@@ -86,6 +86,23 @@ function scanStruk(){
 
 }
 
+function syncToggleSaldo() {
+
+  saldoDisembunyikan =
+    localStorage.getItem("hideSaldo") === "true";
+
+  const btn =
+    document.getElementById("btnToggleSaldo");
+
+  if(btn){
+    btn.textContent =
+      saldoDisembunyikan
+        ? "🙈"
+        : "👁";
+  }
+
+}
+
 
 
 // ================== parse tanggal ===============
@@ -163,6 +180,9 @@ if(rememberLogin){
 // ================== render dashboard =================
 
 function renderDashboard(hasil){
+
+saldoDisembunyikan =
+    localStorage.getItem("hideSaldo") === "true";
 
     hideSkeleton();
 
@@ -578,6 +598,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   loadThemeDashboard();
 
+syncToggleSaldo();
+
   const pesan = sessionStorage.getItem("toastMessage");
 
   if (pesan) {
@@ -629,5 +651,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 window.addEventListener("pageshow", () => {
   loadThemeDashboard();
+syncToggleSaldo();
   loadDashboard();
 });
