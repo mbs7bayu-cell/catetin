@@ -353,6 +353,34 @@ body{
 
 }
 
+/* ======== dot =========== */
+.dot{
+  display: inline-block; /* Tampilkan default dot */
+  height: 8px;
+  width: 8px;
+  background-color: #f44336;
+  border-radius: 50%;
+  animation: pulse 1.2s infinite;
+  margin-right: 5px;
+}
+
+@keyframes pulse{
+  0%{
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255,59,48,.7);
+  }
+
+  70%{
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(255,59,48,0);
+  }
+
+  100%{
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255,59,48,0);
+  }
+}
+
 /* ==================== btn eye ================ */
 .saldoHeader{
   display:flex;
