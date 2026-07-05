@@ -95,12 +95,7 @@ function toggleTheme() {
     isDark ? "dark" : "light"
   );
 
-  document
-    .querySelector('meta[name="theme-color"]')
-    .setAttribute(
-      "content",
-      isDark ? "#121212" : "#f5f7fb"
-    );
+  updateThemeColor();
   
 
   if (document.documentElement.classList.contains("dark")) {
@@ -116,62 +111,44 @@ function toggleTheme() {
 
 function loadTheme() {
 
-  const theme =
-    localStorage.getItem("theme");
-
-  const meta =
-    document.querySelector(
-      'meta[name="theme-color"]'
-    );
+  const theme = localStorage.getItem("theme");
 
   if(theme === "dark"){
-
     document.documentElement.classList.add("dark");
-
-    meta.setAttribute(
-      "content",
-      "#121212"
-    );
-
   }else{
-
     document.documentElement.classList.remove("dark");
-
-    meta.setAttribute(
-      "content",
-      "#f5f7fb"
-    );
-
   }
+
+  updateThemeColor();
 
 }
 
   function loadThemeDashboard() {
-    
-    const theme = localStorage.getItem("theme");
-    const btn =
-      document.querySelector(".themeBtn");
-    const meta =
-      document.querySelector(
-        'meta[name="theme-color"]'
-      );
 
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-      btn.textContent = "☀️";
-      meta.setAttribute(
-        "content",
-        "#121212"
-      );
-    } else {
-      document.documentElement.classList.remove("dark");
-      btn.textContent = "🌙";
-      meta.setAttribute(
-        "content",
-        "#f5f7fb"
-      );
+  const theme = localStorage.getItem("theme");
+  const btn = document.querySelector(".themeBtn");
 
-    }
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+    btn.textContent = "☀️";
+  } else {
+    document.documentElement.classList.remove("dark");
+    btn.textContent = "🌙";
   }
 
+  updateThemeColor();
+
+}
+
+
+function updateThemeColor() {
+  const meta = document.querySelector('meta[name="theme-color"]');
+
+  meta.setAttribute(
+    "content",
+    document.documentElement.classList.contains("dark")
+      ? "#121212"
+      : "#f5f7fb"
+  );
+}
   
