@@ -278,6 +278,13 @@ function renderTransaksi(trx){
     warna = "#2d89ef";
   }
 
+  const simbol =
+  trx.jenis === "masuk"
+    ? "+"
+    : trx.jenis === "keluar"
+    ? "-"
+    : "⇆";
+
   item.innerHTML = `
     <div class="transaksiHeader">
 
@@ -318,7 +325,7 @@ function renderTransaksi(trx){
           class="nominal"
           style="color:${warna}"
         >
-          Rp ${formatRupiah(trx.nominal)}
+          ${simbol} Rp ${formatRupiah(trx.nominal)}
         </div>
 
         ${
@@ -428,7 +435,7 @@ async function loadDashboard(){
 
 // =================================== skeleton =================================
 
-function showSkeleton(){
+function showSkeleton(){
 
   const list = document.getElementById("listTransaksi");
   const saldo = document.getElementById("saldo");
