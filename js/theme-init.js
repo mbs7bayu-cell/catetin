@@ -12,3 +12,6 @@ if (meta) {
         isDark ? "#121212" : "#f5f7fb"
     );
 }
+
+document.documentElement.style.colorScheme =
+    isDark ? "dark" : "light";
