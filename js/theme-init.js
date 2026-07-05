@@ -6,5 +6,5 @@ if (localStorage.getItem("theme") === "dark") {
 } else {
     document
         .querySelector('meta[name="theme-color"]')
-        .setAttribute("content", "#3B82C4"); // warna light
+        .setAttribute("content", "#f5f7fb"); // warna light
 }
