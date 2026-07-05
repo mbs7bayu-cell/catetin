@@ -96,7 +96,7 @@ function toggleTheme() {
     btn.textContent = isDark ? "☀️" : "🌙";
   }
 
- // updateThemeColor();
+ updateThemeColor();
 
 document.documentElement.style.colorScheme =
     isDark ? "dark" : "light";
