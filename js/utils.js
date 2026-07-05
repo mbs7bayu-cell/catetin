@@ -98,11 +98,10 @@ function toggleTheme() {
 
   updateThemeColor();
 
-requestAnimationFrame(() => {
-  requestAnimationFrame(() => {
-    updateThemeColor();
-  });
-});
+document.documentElement.style.colorScheme =
+    isDark ? "dark" : "light";
+
+
 }
 
 function loadTheme() {
