@@ -97,6 +97,12 @@ function toggleTheme() {
   }
 
   updateThemeColor();
+
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    updateThemeColor();
+  });
+});
 }
 
 function loadTheme() {
