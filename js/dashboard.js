@@ -184,6 +184,23 @@ function renderDashboard(hasil){
     saldoDisembunyikan
       ? "••••••••"
       : "Rp " + formatRupiah(hasil.totalKeluar || 0);
+  
+  // kredit
+  const infoKredit =
+    document.getElementById("infoKredit");
+
+  if (hasil.jumlahKredit > 0) {
+
+    infoKredit.innerText =
+      saldoDisembunyikan
+        ? ""
+        : `🔴 Kredit aktif ${hasil.jumlahKredit} • Sisa Rp ${formatRupiah(hasil.totalSisaKredit)}`;
+
+  } else {
+
+    infoKredit.innerText = "";
+
+  }
 
   const list =
     document.getElementById("listTransaksi");
@@ -511,7 +528,8 @@ async function hapusTransaksi(id){
     const hasil = await res.json();
 
     if(hasil.success){
-          localStorage.removeItem("dompetCache");
+      
+      localStorage.removeItem("dompetCache");
 
       sessionStorage.removeItem("dompet");
       sessionStorage.removeItem("laporan");
