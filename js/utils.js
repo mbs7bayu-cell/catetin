@@ -136,10 +136,12 @@ function updateThemeColor() {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (!meta) return;
 
-  meta.setAttribute(
-    "content",
+  const color =
     document.documentElement.classList.contains("dark")
       ? "#121212"
-      : "#f5f7fb"
-  );
+      : "#f5f7fb";
+
+  if (meta.content !== color) {
+    meta.content = color;
+  }
 }
