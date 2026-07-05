@@ -628,5 +628,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 window.addEventListener("pageshow", () => {
+  loadThemeDashboard();
   loadDashboard();
 });
