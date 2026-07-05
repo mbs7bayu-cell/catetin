@@ -142,12 +142,11 @@ function updateThemeColor() {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (!meta) return;
 
-  const color =
-    document.documentElement.classList.contains("dark")
-      ? "#121212"
-      : "#f5f7fb";
+  const color = document.documentElement.classList.contains("dark")
+    ? "#121212"
+    : "#f5f7fb";
 
-  if (meta.content !== color) {
-    meta.content = color;
-  }
+  setTimeout(() => {
+    meta.setAttribute("content", color);
+  }, 30);
 }
