@@ -1,4 +1,6 @@
-if (localStorage.getItem("theme") === "dark") {
+const isDark = localStorage.getItem("theme") === "dark";
+
+if (isDark) {
     document.documentElement.classList.add("dark");
 }
 
@@ -7,8 +9,6 @@ const meta = document.querySelector('meta[name="theme-color"]');
 if (meta) {
     meta.setAttribute(
         "content",
-        localStorage.getItem("theme") === "dark"
-            ? "#121212"
-            : "#f5f7fb"
+        isDark ? "#121212" : "#f5f7fb"
     );
 }
