@@ -99,7 +99,7 @@ function toggleTheme() {
     .querySelector('meta[name="theme-color"]')
     .setAttribute(
       "content",
-      isDark ? "#121212" : "#3B82C4"
+      isDark ? "#121212" : "#f5f7fb"
     );
   
 
@@ -139,7 +139,7 @@ function loadTheme() {
 
     meta.setAttribute(
       "content",
-      "#3B82C4"
+      "#f5f7fb"
     );
 
   }
@@ -168,7 +168,7 @@ function loadTheme() {
       btn.textContent = "🌙";
       meta.setAttribute(
         "content",
-        "#3B82C4"
+        "#f5f7fb"
       );
 
     }
