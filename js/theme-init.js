@@ -13,5 +13,5 @@ if (meta) {
     );
 }
 
-document.documentElement.style.colorScheme =
-    isDark ? "dark" : "light";
+//document.documentElement.style.colorScheme =
+ //   isDark ? "dark" : "light";
