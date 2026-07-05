@@ -428,23 +428,7 @@ async function loadDashboard(){
 
 // =================================== skeleton =================================
 
-function showSkeleton(){
-
-  document
-    .getElementById("saldo")
-    .classList.add("skeleton-saldo");
-
-  document
-    .getElementById("totalMasukBulan")
-    .classList.add("skeleton-text");
-
-  document
-    .getElementById("totalKeluarBulan")
-    .classList.add("skeleton-text");
-
-  document
-    .getElementById("listTransaksi")
-    .classList.add("skeleton-card");
+function showSkeleton(){
 
   const list = document.getElementById("listTransaksi");
   const saldo = document.getElementById("saldo");
