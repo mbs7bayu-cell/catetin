@@ -81,10 +81,6 @@ function toggleMenu() {
 
 // ============== theme ==================
 function toggleTheme() {
-
-  const btn =
-    document.querySelector(".themeBtn");
-
   document.documentElement.classList.toggle("dark");
 
   const isDark =
@@ -95,18 +91,12 @@ function toggleTheme() {
     isDark ? "dark" : "light"
   );
 
-  updateThemeColor();
-  
-
-  if (document.documentElement.classList.contains("dark")) {
-    localStorage.setItem("theme", "dark");
-    btn.textContent = "☀️";
-  } else {
-    localStorage.setItem("theme", "light");
-    btn.textContent = "🌙";
+  const btn = document.querySelector(".themeBtn");
+  if (btn) {
+    btn.textContent = isDark ? "☀️" : "🌙";
   }
 
-  console.log(localStorage.getItem("theme"));
+  updateThemeColor();
 }
 
 function loadTheme() {
@@ -130,19 +120,21 @@ function loadTheme() {
 
   if (theme === "dark") {
     document.documentElement.classList.add("dark");
-    btn.textContent = "☀️";
   } else {
     document.documentElement.classList.remove("dark");
-    btn.textContent = "🌙";
+  }
+
+  if (btn) {
+    btn.textContent = theme === "dark" ? "☀️" : "🌙";
   }
 
   updateThemeColor();
-
 }
 
 
 function updateThemeColor() {
   const meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) return;
 
   meta.setAttribute(
     "content",
@@ -151,4 +143,3 @@ function updateThemeColor() {
       : "#f5f7fb"
   );
 }
-  
