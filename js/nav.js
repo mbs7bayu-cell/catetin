@@ -1,15 +1,15 @@
 function lihatDompet(){
-  window.location.assign("dompet.html");
+  window.location.href = "dompet.html";
 }
 
 function lihatLaporan(){
-  window.location.assign("laporan.html");
+  window.location.href = "laporan.html";
 }
 
 function lihatDashboard(){
-  window.location.assign("dashboard.html");
+  window.location.href = "dashboard.html";
 }
 
 function lihatProfil(){
-  window.location.assign("user-profil.html");
+  window.location.href = "user-profil.html";
 }
