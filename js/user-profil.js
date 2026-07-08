@@ -21,29 +21,46 @@ async function getProfil(){
 
   try {
 
-    const res = await fetch(
-      API + "?mode=getProfil&id_user=" + user.userId
-    );
+    const cache =
+      sessionStorage.getItem("profil");
 
-    const r = await res.json();
+    let r = [];
 
+    if(cache){
 
-    console.log(r);
+      r = JSON.parse(cache);
 
-    if(!r.ok){
-      listProfil.innerText = "Gagal memuat";
-      return;
+    }else{
+
+        const res = await fetch(
+          API + "?mode=getProfil&id_user=" + user.userId
+        );
+
+        r = await res.json();
+
+        sessionStorage.setItem(
+        "profil",
+        JSON.stringify(r)
+        );
+        
     }
 
-    const n = r.data;
+        console.log(r);
 
-    namaUser.innerHTML = `
-      ${n.nama}
-    `;
+        if(!r.ok){
+          listProfil.innerText = "Gagal memuat";
+          return;
+        }
 
-    gmailUser.innerHTML = `
-      ${n.gmail}
-    `;
+        const n = r.data;
+
+        namaUser.innerHTML = `
+          ${n.nama}
+        `;
+
+        gmailUser.innerHTML = `
+          ${n.gmail}
+        `;
 
   } catch(err){
     console.log(err);

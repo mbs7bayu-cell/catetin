@@ -161,6 +161,9 @@ async function simpanPengeluaran(){
 
   // ================= LOADING =================
 
+  
+  showLoading("mohon tunggu...");
+
   btn.disabled = true;
 
   btn.innerText = "Menyimpan...";
@@ -243,6 +246,9 @@ async function simpanPengeluaran(){
     btn.disabled = false;
 
     btn.innerText = "Simpan";
+  } finally {
+
+    hideLoading();
   }
 }
 

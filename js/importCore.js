@@ -264,22 +264,3 @@ function isiDompetTujuan(select, trx){
     }
 
 }
-
-// ============================== loading =====================
-function showLoading(text = "Memproses file..."){
-
-    document.querySelector("#loadingImport h3").textContent = text;
-
-    document
-        .getElementById("loadingImport")
-        .classList.remove("hidden");
-
-}
-
-function hideLoading(){
-
-    document
-        .getElementById("loadingImport")
-        .classList.add("hidden");
-
-}

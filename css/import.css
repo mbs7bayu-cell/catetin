@@ -422,12 +422,6 @@
     animation:putar .8s linear infinite;
 }
 
-@keyframes putar{
-    to{
-        transform:rotate(360deg);
-    }
-}
-
 
 /* ================= RESPONSIVE ================= */
 

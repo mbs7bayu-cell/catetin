@@ -226,11 +226,11 @@ function render(hasil) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
   loadTheme();
 
-  loadDompet();
+  await loadDompet();
 
   formatInputRupiah("nominalKredit");
   formatInputRupiah("nominalPinjaman");
@@ -408,6 +408,7 @@ async function simpanKredit(){
       sessionStorage.removeItem("dompet");
       sessionStorage.removeItem("laporan");
       localStorage.removeItem("dashboard");
+      localStorage.removeItem("kreditList");
 
       btn.innerText = "Berhasil ✔";
 
@@ -482,52 +483,69 @@ cekJenisKredit();
 
 async function loadDompet(){
 
-  const user = JSON.parse(
-      sessionStorage.getItem("user") ||
-      localStorage.getItem("user") ||
-      localStorage.getItem("activeUser")
-    );
+  try {
+    
+    const cache =
+      sessionStorage.getItem("dompet");
 
-    if(!user){
+    if(cache){
 
-      location.href = "login.html";
+      daftarDompet = JSON.parse(cache);
+
+    }else{
+
+      const user = JSON.parse(
+          sessionStorage.getItem("user") ||
+          localStorage.getItem("user") ||
+          localStorage.getItem("activeUser")
+        );
+
+        if(!user){
+
+          location.href = "login.html";
+        }
+
+          const res = await fetch(
+            `${API}?mode=dompet&userId=${user.userId}`
+          );
+
+          daftarDompet = await res.json();
+
+          sessionStorage.setItem(
+            "dompet",
+            JSON.stringify(daftarDompet)
+          );
+    
     }
 
-    try{
+          const tujuan =
+            document.getElementById("sumberTujuan");
 
-      const res = await fetch(
-    `${API}?mode=dompet&userId=${user.userId}`
-  );
+          tujuan.innerHTML = `
+            <option value="">
+              -- pilih dompet --
+            </option>
+          `;
 
-  daftarDompet = await res.json();
+          daftarDompet.forEach(d => {
 
-  const tujuan =
-    document.getElementById("sumberTujuan");
+            const text =
+              `${d.nama} - Rp ${Number(d.saldo).toLocaleString("id-ID")}`;
 
-  tujuan.innerHTML = `
-    <option value="">
-      -- pilih dompet --
-    </option>
-  `;
+            const opt = document.createElement("option");
 
-  daftarDompet.forEach(d => {
+            opt.value = d.id_sumber;
+            opt.textContent = text;
 
-    const text =
-      `${d.nama} - Rp ${Number(d.saldo).toLocaleString("id-ID")}`;
+            tujuan.appendChild(opt);
 
-    const opt = document.createElement("option");
-
-    opt.value = d.id_sumber;
-    opt.textContent = text;
-
-    tujuan.appendChild(opt);
-
-  });
+          });
 
   }catch(err){
 
-    console.error(err);
-    showToast("Gagal load dompet");
+            console.error(err);
+            showToast("Gagal load dompet");
+            
   }
 }
 
@@ -592,6 +610,7 @@ if(hasil.ok){
       sessionStorage.removeItem("dompet");
       sessionStorage.removeItem("laporan");
       localStorage.removeItem("dashboard");
+      localStorage.removeItem("kreditList");
 
   showToast("Kredit berhasil dihapus");
 
@@ -647,6 +666,12 @@ async function bayarKredit(idKredit, idDompet, nominal) {
   const hasil = await res.json();
 
   if (hasil.ok) {
+    localStorage.removeItem("dompetCache");
+
+      sessionStorage.removeItem("dompet");
+      sessionStorage.removeItem("laporan");
+      localStorage.removeItem("dashboard");
+      localStorage.removeItem("kreditList");
     showToast("Pembayaran berhasil");
     closeBayarKredit();
     loadData();

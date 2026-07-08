@@ -174,6 +174,8 @@ async function simpanTransfer(){
 
   // ================= LOADING =================
 
+  showLoading("mohon tunggu...");
+
   btn.disabled = true;
   btn.innerText = "Memproses...";
 
@@ -239,7 +241,11 @@ async function simpanTransfer(){
 
     btn.disabled = false;
     btn.innerText = "Transfer";
+  } finally {
+
+    hideLoading();
   }
+
 }
 
 // ================= FORMAT RUPIAH =================

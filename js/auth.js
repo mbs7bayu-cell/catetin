@@ -158,6 +158,14 @@
 
     window.logout = function() {
 
+      localStorage.removeItem("dompetCache");
+      sessionStorage.removeItem("dompet");
+      sessionStorage.removeItem("laporan");
+      localStorage.removeItem("dashboard");
+      localStorage.removeItem("kreditList");
+      sessionStorage.removeItem("profil");
+
+
       console.trace("LOGOUT DIPANGGIL");
 
       const keepLogin =

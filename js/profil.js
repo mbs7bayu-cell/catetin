@@ -76,6 +76,9 @@ btnSimpan.addEventListener("click", async function () {
       return;
     }
 
+    sessionStorage.removeItem("profil");
+
+
     showToast("Profil berhasil disimpan");
 
     setTimeout(() => {

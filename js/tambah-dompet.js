@@ -28,6 +28,12 @@ function simpan() {
   .then(res => {
 
     if(res.ok){
+
+      localStorage.removeItem("dompetCache");
+      sessionStorage.removeItem("dompet");
+      sessionStorage.removeItem("laporan");
+      localStorage.removeItem("dashboard");
+      
       btn.innerText = "Berhasil ✔";
       
       setTimeout(() => {

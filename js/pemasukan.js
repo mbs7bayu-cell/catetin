@@ -150,6 +150,7 @@ async function simpanPemasukan(){
   };
 
   // ================= LOADING =================
+      showLoading("mohon tunggu...");
 
   btn.disabled = true;
   btn.innerText = "Menyimpan...";
@@ -224,7 +225,11 @@ async function simpanPemasukan(){
 
     btn.disabled = false;
     btn.innerText = "Simpan";
+  } finally {
+
+    hideLoading();
   }
+
 }
 
 // ================== format rupiah ==================
