@@ -201,7 +201,7 @@ body{
 }
 
 .btnHapus:hover{
-  background: #A94444;
+  background: none;
 }
 
 .loading{
@@ -387,7 +387,7 @@ body{
   }
 
   .rememberText {
-    display: none;
+    font-size: none;
   }
 
 }

@@ -22,22 +22,22 @@
 }
 
 .dark{
-  --bg:#11100a;
-  --card:#15120b;
-  --text:#faf9f4;
+  --bg:#0b0b0b;
+  --card:#141414;
+  --text:#f5f5f5;
   --textButton:#15120b;
   --primary:#1e1e1e;
   --cardMenu:#1e1e1e;
-  --button:#faf9f4;
+  --button:#f5f5f5;
   --buttonHover:#202020;
   --borderButton:#2E2E2E;
-  --cardList: #26211e;
+  --cardList: #1d1d1d;
   --cardImport: #666;
   --textPreview: #aaa;
   --border:none;
   --shadow: none;
-  --textSecondary:#918c89;
-  --cardInput:#26211e;
+  --textSecondary:#a8a8a8;
+  --cardInput:#1d1d1d;
   --borderTransaksi: #444;
   --cardSummaryMasuk:#faf9f4;
   --cardSummaryKeluar:#faf9f4;

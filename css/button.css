@@ -279,6 +279,18 @@ cursor:pointer;
 font-size: 15px;
 }
 
+.btnBack:hover {
+  background-color: var(--text);
+}
+
+#btnKredit:hover, #btnSimpanKredit:hover, #btnBatalKredit:hover, #bayarKredit:hover, #btnBatalBayar:hover {
+  background-color: var(--text);
+}
+
+#dompetBayar {
+  color: var(--text);
+}
+
 .btnEdit{
   width: 55px;
   margin-left: auto;
@@ -293,7 +305,7 @@ font-size: 15px;
 }
 
 .btnEdit:hover{
-  background: #333333;
+  background: none;
 }
 
 .btnHapusKredit{
@@ -323,7 +335,7 @@ font-size: 15px;
 }
 
 .btnHapusKredit:hover{
-  background: #333333;
+  background: none;
 }
 
 .modal{
@@ -517,7 +529,7 @@ font-size: 15px;
 }
 
 .kategori-item:hover{
-  background:#f5f5f5;
+  background:var(--bg);
 }
 
 #listKategori .card{

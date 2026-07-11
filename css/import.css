@@ -21,6 +21,10 @@
 
 }
 
+#btnPilihFile:hover {
+    background-color: var(--text); 
+}
+
 .btnCatatan{
 
     background:none;
@@ -84,6 +88,10 @@
     margin-bottom: 20px;
     margin-top: 15px !important;
 
+}
+
+#btnImport:hover {
+    background-color: var(--text);
 }
 
 
@@ -358,6 +366,12 @@
 .summaryDompet {
     margin-top: 10px;
 }
+
+#dompetSelect {
+        color: var(--text);
+
+}
+
 
 .checkAll{
     display:flex;

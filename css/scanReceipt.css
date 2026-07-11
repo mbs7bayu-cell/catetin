@@ -147,6 +147,10 @@
 
 }
 
+#btnCamera, #btnGallery {
+    background-color: var(--text); 
+}
+
 .previewSheet{
 
     position:fixed;
