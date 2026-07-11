@@ -387,7 +387,7 @@ body{
   }
 
   .rememberText {
-    font-size: 10px;
+    display: none;
   }
 
 }
