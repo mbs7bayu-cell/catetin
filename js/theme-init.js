@@ -9,7 +9,7 @@ const meta = document.querySelector('meta[name="theme-color"]');
 if (meta) {
     meta.setAttribute(
         "content",
-        isDark ? "#121212" : "#f5f7fb"
+        isDark ? "#11100a" : "#f2f2ef"
     );
 }
 

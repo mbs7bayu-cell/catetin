@@ -1,7 +1,7 @@
 .toggle{
   font-size:12px;
   cursor:pointer;
-  color:blue;
+  color:#8e8e8c;
 }
 
 .logo-login{
@@ -41,6 +41,7 @@
   display:inline-block;
   margin-top:10px;
   text-decoration:none;
+  color: #8e8e8c;
 }
 
 #footer{
@@ -156,7 +157,7 @@ height:44px;
 }
 
 .card h3 {
-  color: #777;
+  color: #8e8e8c;
 }
 
 

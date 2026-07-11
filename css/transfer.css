@@ -11,12 +11,13 @@ input,
 textarea{
   width:100%;
   padding:14px;
-  border:1px solid #ddd;
+  border:1px solid var(--border);
   border-radius:8px;
   margin-top:8px;
   margin-bottom:16px;
   font-size:15px;
-  background:white;
+  background:var(--cardInput);
+  color: var(--text);
 }
 
 textarea{
@@ -33,7 +34,7 @@ label{
   width:100%;
   border:none;
   background:var(--button);
-  color:white;
+  color:var(--textButton);
   padding:12px;
   border-radius:8px;
   font-size:15px;
@@ -61,7 +62,7 @@ label{
 }
 
 .btnBack{
-background:#C75B5B;
+background:var(--textSecondary);
 color:white;
 border:none;
 padding:12px;
@@ -69,4 +70,5 @@ border-radius:8px;
 width:100%;
 font-weight:600;
 cursor:pointer;
+font-size: 15px;
 }

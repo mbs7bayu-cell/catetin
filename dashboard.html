@@ -3,7 +3,7 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#f5f7fb" id="themeColor">
+<meta name="theme-color" content="#f2f2ef" id="themeColor">
 <title>Dashboard</title>
 
 <script src="js/theme-init.js"></script>
@@ -59,6 +59,13 @@
               🌙
             </button>
 
+            <button 
+              id="telegramBtn"
+              class="telegramButton"
+              onclick="hubungkanTelegram()">
+              🤖
+            </button>
+
           </div>
 
         </div>
@@ -79,16 +86,8 @@
         </div>
       </div>
 
-      <button 
-      id="telegramBtn"
-      class="telegramButton"
-      onclick="hubungkanTelegram()">
-      🤖 Hubungkan Telegram
-      </button>
 
-  </div>
-
-  <div class="card">
+  <div class="card-saldo">
 
     <div class="saldoHeader">
 
@@ -96,13 +95,13 @@
         Saldo :
       </span>
 
-    <button
-      id="btnToggleSaldo"
-      class="btnEye"
-      onclick="toggleSaldo()"
-    >
-      👁
-    </button>
+      <button
+        id="btnToggleSaldo"
+        class="btnEye"
+        onclick="toggleSaldo()"
+      >
+        👁
+      </button>
 
     </div>
 
@@ -121,9 +120,13 @@
 
   </div>
 
+  </div>
+
+
+
   <div class="card">
 
-      <p style="margin:0; padding:0; color:var(--text); font-size:12px;">Transaksi Terbaru :</p>
+      <p style="margin:0; padding:0; color:var(--textSecondary); font-size:12px;">Transaksi Terbaru :</p>
 
       <div id="listTransaksi" class="skeleton-card">
 
@@ -137,25 +140,58 @@
 
   <div class="menu">
     <div class="card">
-        <p style="margin:0; padding:0; color:var(--text); font-size:12px;">Menu :</p>
+        <p style="margin:0; padding:0; color:var(--textSecondary); font-size:12px;">Menu :</p>
 
-          <button onclick="tambahPemasukan()">💰 Pemasukan</button>
-          <button onclick="tambahPengeluaran()">💸 Pengeluaran</button>
-          <button onclick="transfer()">🔄 Transfer</button>
-          <button onclick="kredit()">💳 Kredit</button>
+          <div class="menuCard masuk" onclick="tambahPemasukan()">
+              <div class="menuContent">
+                  <div class="menuTitle">Pemasukan</div>
+                  <div class="menuSubtitle">Catat uang yang diterima</div>
+              </div>
+              <span class="menuArrow">›</span>
+          </div>
+
+          <div class="menuCard keluar" onclick="tambahPengeluaran()">
+              <div class="menuContent">
+                  <div class="menuTitle">Pengeluaran</div>
+                  <div class="menuSubtitle">Catat pengeluaran harian</div>
+              </div>
+              <span class="menuArrow">›</span>
+          </div>
+
+          <div class="menuCard transfer" onclick="transfer()">
+              <div class="menuContent">
+                  <div class="menuTitle">Transfer</div>
+                  <div class="menuSubtitle">Pindahkan saldo antar dompet</div>
+              </div>
+              <span class="menuArrow">›</span>
+          </div>
+
+          <div class="menuCard kredit" onclick="kredit()">
+              <div class="menuContent">
+                  <div class="menuTitle">Kredit</div>
+                  <div class="menuSubtitle">Kelola cicilan dan utang</div>
+              </div>
+              <span class="menuArrow">›</span>
+          </div>
 
                 <hr style="margin:15px 0; opacity:.15;">
 
-          <button class="btnImport" onclick="importTransaksi()">
-              📥 Import Transaksi
-          </button>
+          <div class="menuCard import" onclick="importTransaksi()">
+              <div class="menuContent">
+                  <div class="menuTitle">Import Transaksi</div>
+                  <div class="menuSubtitle">Import dari PDF atau mutasi bank</div>
+              </div>
+              <span class="menuArrow">›</span>
+          </div>
 
-          <button class="btnScan" onclick="scanStruk()">
-              📷 Scan Bukti Transaksi 
-          </button>
+          <div class="menuCard scan" onclick="scanStruk()">
+              <div class="menuContent">
+                  <div class="menuTitle">Scan Bukti Transaksi</div>
+                  <div class="menuSubtitle">Ekstrak data dari foto struk</div>
+              </div>
+              <span class="menuArrow">›</span>
+          </div>
 
-
-          
     </div>
   </div>
 

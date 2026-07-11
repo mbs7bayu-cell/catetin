@@ -65,3 +65,29 @@ body{
   box-shadow:0 2px 8px rgba(0,0,0,.08);
   margin-bottom: 10px;
 }
+
+.header {
+  margin-bottom: 15px;
+}
+
+.logoutBtn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:8px;
+  background:#C75B5B;
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+}
+
+.editBtn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:8px;
+  background:var(--button);
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+}

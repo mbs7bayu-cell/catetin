@@ -1,9 +1,11 @@
 .header{
-  background:var(--primary);
-  color:white;
+  background:var(--card);
+  color:var(--text);
   padding:20px;
   border-radius:16px;
   margin-bottom: 16px;
+  border:1px solid var(--border);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 body{
@@ -23,7 +25,7 @@ body{
 
 .appTitle{
   display:flex;
-  align-items:center;
+  align-items:right;
   gap:10px;
 }
 
@@ -35,6 +37,8 @@ body{
 
 .appText{
   display:flex;
+  align-items:center;
+  justify-content:center;
   flex-direction:column;
   line-height:1.1;
   font-size: 30px;
@@ -46,7 +50,19 @@ body{
   border-radius:16px;
   padding:16px;
   margin-bottom:16px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+  border:1px solid var(--border);
+  box-shadow: 0 1px 2px var(--shadow);  
+}
+
+.card-saldo{
+  background:var(--cardList);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px;
+  margin-top: 10px;
+  margin-bottom: 0;
+  border:1px solid var(--border);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 .saldo{
@@ -66,10 +82,10 @@ body{
 
 .menu button{
   padding:16px;
-  border:none;
+  border:1px solid var(--borderButton);
   border-radius:8px;
   background:var(--button);
-  color:white;
+  color:var(--textButton);
   font-size:15px;
   cursor:pointer;
   transition:0.2s;
@@ -101,7 +117,7 @@ body{
 
 .transaksiItem{
   padding:12px 0;
-  border-bottom:1px solid #eee;
+  border-bottom:1px solid var(--borderTransaksi);
 }
 
 .transaksiHeader{
@@ -122,6 +138,7 @@ body{
   -webkit-box-orient:vertical;
   overflow:hidden;
   white-space:normal;
+  color: var(--text);
 }
 
 .nominal{
@@ -131,13 +148,13 @@ body{
 
 .jenis{
   font-size:13px;
-  color:var(--text);
+  color:var(--textSecondary);
   margin-top:4px;
 }
 
 .kosong{
   text-align:center;
-  color:var(--text);
+  color:var(--textSecondary);
   padding:20px;
 }
 
@@ -166,19 +183,19 @@ body{
 
 .tanggal{
   font-size: 12px;
-  color: var(--text);
+  color: var(--textSecondary);
   margin-top: 4px;
 }
 
 .btnHapus{
-  width: 55px;
+  width: auto;
   margin-left: auto;
-  margin-top: 8px;
-  padding: 6px 10px;
+  margin-top: 12px;
+  padding: 0;
   font-size: 12px;
   border: none;
   border-radius: 8px;
-  background: #C75B5B;
+  background: none;
   color: white;
   cursor: pointer;
 }
@@ -201,9 +218,16 @@ body{
 .itemRingkasan{
   flex:1;
   min-width:0; /* penting */
-  background:rgba(255,255,255,0.15);
+  background:var(--cardList);
   padding:10px;
   border-radius:8px;
+  box-shadow: 0 6px 20px var(--shadow);
+  border:1px solid var(--border);
+}
+
+.itemRingkasan span {
+  font-size: 12px;
+  color: var(--textSecondary);
 }
 
 .itemRingkasan strong{
@@ -213,11 +237,11 @@ body{
 }
 
 #totalMasukBulan{
-  color:#d2fce1;
+  color:var(--text);
 }
 
 #totalKeluarBulan{
-  color:#fdd3d3;
+  color:var(--text);
 }
 
 .headerTop{
@@ -229,10 +253,11 @@ body{
 
 .keepLoginBox{
   display:flex;
+
   align-items:center;
   gap:10px;
   font-size:11px;
-  color:white;
+  color:var(--text);
   font-weight:500;
   padding: 20px;
   padding-right: 0;
@@ -255,7 +280,7 @@ body{
   position:absolute;
   inset:0;
   cursor:pointer;
-  background:#d1d5db;
+  background:var(--button);
   border-radius:999px;
   transition:.25s;
 }
@@ -267,7 +292,7 @@ body{
   height:18px;
   left:3px;
   top:3px;
-  background:white;
+  background:var(--textButton);
   border-radius:50%;
   transition:.25s;
 }
@@ -285,7 +310,6 @@ body{
 
 .settingBox{
   display:flex;
-  flex-direction:column;
   align-items:center;
   gap:4px;
 }
@@ -293,7 +317,7 @@ body{
 .rememberText{
   font-size:12px;
   white-space:nowrap;
-  margin-bottom: 40px;
+  color: var(--textSecondary);
 }
 
 .themeBtn{
@@ -307,6 +331,7 @@ body{
   border:none;
   border-radius:50%;
   cursor:pointer;
+  margin:auto;
 }
 
 .themeBtn:hover{
@@ -326,6 +351,31 @@ body{
   opacity:.9;
 }
 
+#userInfo {
+  color: var(--textSecondary);
+}
+
+@media (max-width:350px){
+
+  .ringkasanBulan{
+    flex-direction:column;
+  }
+
+  .keepLoginBox{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .appText {
+    font-size: 16px;
+  }
+
+  .rememberText {
+    display: none;
+  }
+
+}
+
 @media (max-width:375px){
 
   .ringkasanBulan{
@@ -333,7 +383,7 @@ body{
   }
 
   .appText {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .rememberText {
@@ -342,7 +392,8 @@ body{
 
 }
 
-@media (max-width:420px){
+@media (max-width:450px){
+
 
   .appText {
     font-size: 20px;
@@ -426,17 +477,112 @@ body{
 
 .labelSaldo{
   font-size:12px;
-  color:var(--text);
+  color:var(--textSecondary);
   align-items: center;
 }
 
 /* =============== telegram ==================== */
 .telegramButton{
-border:none;
-background:rgba(255,255,255,0.15);
-color:white;
-padding:10px 15px;
-border-radius:10px;
-font-size:14px;
-margin-bottom: 10px;
+  background:var(--button);
+  color:var(--text);
+  border-radius:50%;
+  padding:0;
+  width:32px;
+  height:32px;
+  margin:auto;
+}
+
+.themeBtn{
+  width:32px;
+  height:32px;
+  margin: auto;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.themeBtn:hover{
+  transform:scale(1.05);
+}
+
+/* ============ menu baru =============== */
+.menuCard{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:16px 18px;
+    margin-bottom:0;
+    margin-top: 10px;
+
+    background:var(--cardList);
+    border:1px solid var(--border);
+    border-radius:18px;
+
+    cursor:pointer;
+    transition:.2s;
+}
+
+.menuCard:hover{
+    transform:translateY(-1px);
+}
+
+.menuCard::before{
+    content:"";
+    width:4px;
+    height:36px;
+    border-radius:999px;
+
+    position:absolute;
+    left:12px;
+}
+
+.menuContent{
+    margin-left:14px;
+}
+
+.menuTitle{
+    font-weight:600;
+    font-size:16px;
+}
+
+.menuSubtitle{
+    margin-top:3px;
+    font-size:13px;
+    color:var(--textSecondary);
+}
+
+.menuArrow{
+    font-size:24px;
+    color:var(--text);
+}
+
+.masuk::before{
+    background:#22C55E;
+}
+
+.keluar::before{
+    background:#EF4444;
+}
+
+.transfer::before{
+    background:#3B82F6;
+}
+
+.kredit::before{
+    background:#F59E0B;
+}
+
+.import::before{
+    background:var(--text);
+}
+
+.scan::before{
+    background:var(--text);
 }

@@ -3,8 +3,8 @@
   "short_name": "Catet-In",
   "start_url": "/login.html",
   "display": "standalone",
-  "background_color": "#f5f7fb",
-  "theme_color": "#f5f7fb",
+  "background_color": "#f2f2ef",
+  "theme_color": "#f2f2ef",
   "icons": [
     {
       "src": "/icon-192.png",

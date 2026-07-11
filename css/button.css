@@ -14,11 +14,13 @@ color:var(--text);
 /* HEADER */
 .header{
 padding:20px;
-background:var(--cardMenu);
+background:var(--card);
 position:sticky;
 top:0;
 z-index:10;
 border-radius:16px;
+  border:1px solid var(--border);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 .header h2{
@@ -93,7 +95,7 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 padding:12px 0;
-border-bottom:1px solid #eee;
+border-bottom:1px solid var(--borderTransaksi);
 }
 
 .transaksi:last-child{
@@ -176,13 +178,13 @@ select,
 textarea{
 width:100%;
 padding:12px;
-border:1px solid #ddd;
+border:1px solid var(--border);
 border-radius:8px;
 margin-top:6px;
 margin-bottom:14px;
 font-family:'Inter',sans-serif;
 font-size:14px;
-background:white;
+background:var(--cardInput);
 }
 
 textarea{
@@ -266,7 +268,7 @@ font-size:13px;
 
 /* BACK BUTTON */
 .btnBack{
-background:#C75B5B;
+background:var(--textSecondary);
 color:white;
 border:none;
 padding:12px;
@@ -274,6 +276,7 @@ border-radius:8px;
 width:100%;
 font-weight:600;
 cursor:pointer;
+font-size: 15px;
 }
 
 .btnEdit{
@@ -400,7 +403,7 @@ cursor:pointer;
   flex:1;
   padding:14px;
   border-radius:12px;
-  color:white;
+  color:var(--textSecondary);
 
   backdrop-filter:blur(8px);
 
@@ -412,11 +415,11 @@ cursor:pointer;
 }
 
 .summaryCard.masuk{
-  background:rgba(34,197,94,0.7);
+  background:var(--cardSummaryMasuk);
 }
 
 .summaryCard.keluar{
-  background:rgba(239,68,68,0.7);
+  background:var(--cardSummaryKeluar);
 }
 
 .summaryCard span{
@@ -429,7 +432,7 @@ cursor:pointer;
   margin-top:8px;
   font-size:15px;
   font-weight:700;
-  color:white;
+  color:var(--textButton);
 }
 
 .btnDownloadPdf {
@@ -440,7 +443,7 @@ cursor:pointer;
 
   display:flex;
 
-  border-bottom:1px solid #ddd;
+  border-bottom:1px solid var(--borderTransaksi);
 
   margin-bottom:15px;
 }
@@ -489,7 +492,7 @@ cursor:pointer;
   right:0;
 
   background:var(--bg);
-  border:1px solid #ddd;
+  border:1px solid var(--borderTransaksi);
 
   max-height:200px;
   overflow-y:auto;
@@ -505,7 +508,6 @@ cursor:pointer;
 .kategori-item{
   padding:12px 14px;
   cursor:pointer;
-  border-bottom:1px solid #eee;
 }
 
 .kategori-item:last-child{
@@ -517,7 +519,10 @@ cursor:pointer;
 }
 
 #listKategori .card{
+  border: none;
+  box-shadow: none;
   border-radius: 0;
+  border-bottom: 1px solid var(--borderTransaksi);
 } 
 
 /* ============ untuk kredit hidden nominal pinjaman =================== */

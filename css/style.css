@@ -1,27 +1,46 @@
 :root{
-  --bg:#f5f7fb;
-  --card:#ffffff;
-  --text:#333;
-  --primary:#5A8FBE;
+  --bg:#f2f2ef;
+  --card:#f7f7f5;
+  --text:#272723;
+  --textButton:#f7f7f7;
+  --primary:#ffffff;
   --cardMenu:#ffffff;
-  --button:#5A8FBE;
-  --cardList: #ffffff;
+  --button:#272723;
+  --buttonHover:#f9f8f6;
+  --borderButton:#e7e5e4;
+  --cardList: #f7f7f7;
   --cardImport: #e0e0e0;
   --textPreview: #777;
+  --border:#e7e6e1;
+  --shadow: rgba(0,0,0,.03);
+  --textSecondary:#8e8e8c;
+  --cardInput:#fcfcfb;
+  --borderTransaksi: #e7e6e1;
+  --cardSummaryMasuk:rgba(34,197,94,0.7);
+  --cardSummaryKeluar:rgba(239,68,68,0.7);
 
 }
 
 .dark{
-  --bg:#121212;
-  --card:#1e1e1e;
-  --text:#ffffff;
+  --bg:#11100a;
+  --card:#15120b;
+  --text:#faf9f4;
+  --textButton:#15120b;
   --primary:#1e1e1e;
   --cardMenu:#1e1e1e;
-  --button:#333;
-  --cardList: #222;
+  --button:#faf9f4;
+  --buttonHover:#202020;
+  --borderButton:#2E2E2E;
+  --cardList: #26211e;
   --cardImport: #666;
   --textPreview: #aaa;
-
+  --border:none;
+  --shadow: none;
+  --textSecondary:#918c89;
+  --cardInput:#26211e;
+  --borderTransaksi: #444;
+  --cardSummaryMasuk:#faf9f4;
+  --cardSummaryKeluar:#faf9f4;
 }
 
 body{
@@ -41,6 +60,8 @@ body{
   background:var(--card);
   padding:16px;
   border-radius:10px;
+  box-shadow: 0 1px 2px var(--shadow);  
+  border:1px solid var(--border);
 }
 
 input{
@@ -48,15 +69,22 @@ input{
   padding:10px;
   margin:8px 0;
   border-radius:8px;
-  border:1px solid #ccc;
   box-sizing:border-box;
 }
+
+#kategori, #nominal, #catatan, #sumberDana {
+  background: var(--cardInput);
+  border:1px solid var(--border);
+  color: var(--text);
+}
+
+
 
 button{
   width:100%;
   padding:12px;
   background:var(--button);
-  color:white;
+  color:var(--textButton);
   border:none;
   border-radius:8px;
   cursor:pointer;
@@ -65,7 +93,7 @@ button{
 }
 
 button:hover{
-  background:#2F6FA8;
+  background:var(--buttonHover);
   transform:translateY(-2px);
 }
 
@@ -145,6 +173,13 @@ button:disabled{
 
     animation:putar .8s linear infinite;
 
+}
+
+#btnSimpan {
+  background: var(--button);
+  color: var(--textButton);
+  font-weight: bold;
+  font-size: 15px;
 }
 
 @keyframes putar{

@@ -857,7 +857,7 @@ function renderLaporan(hasil){
               <div>Pemasukan</div>
 
               <strong>
-                ${formatRupiah(totalMasuk)}
+                + ${formatRupiah(totalMasuk)}
               </strong>
 
             </div>
@@ -867,7 +867,7 @@ function renderLaporan(hasil){
               <div>Pengeluaran</div>
 
               <strong>
-                ${formatRupiah(totalKeluar)}
+               - ${formatRupiah(totalKeluar)}
               </strong>
 
             </div>

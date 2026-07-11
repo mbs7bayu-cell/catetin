@@ -41,9 +41,7 @@ async function loadDompet(){
       document.getElementById("sumberDana");
 
     select.innerHTML = `
-      <option value="">
-        -- pilih dompet --
-      </option>
+      
     `;
 
     data.forEach(d=>{

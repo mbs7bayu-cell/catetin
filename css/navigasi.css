@@ -34,7 +34,7 @@
   align-items: center;
   justify-content: center;
 
-  color: var(--text);
+  color: var(--textSecondary);
   font-size: 15px;
 }
 
