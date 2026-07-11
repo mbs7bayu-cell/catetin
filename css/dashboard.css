@@ -357,13 +357,8 @@ body{
 
 @media (max-width:350px){
 
-  .ringkasanBulan{
-    flex-direction:column;
-  }
-
-  .keepLoginBox{
-    flex-direction:column;
-    align-items:flex-start;
+  body {
+    padding: 20px 15px 90px 15px;
   }
 
   .appText {
@@ -378,8 +373,8 @@ body{
 
 @media (max-width:375px){
 
-  .ringkasanBulan{
-    flex-direction:column;
+  body {
+    padding: 20px 15px 90px 15px;
   }
 
   .appText {
@@ -387,7 +382,7 @@ body{
   }
 
   .rememberText {
-    font-size: none;
+    display: none;
   }
 
 }
