@@ -142,7 +142,7 @@ function updateThemeColor() {
   if (!meta) return;
 
   const color = document.documentElement.classList.contains("dark")
-    ? "#11100a"
+    ? "#0b0b0b"
     : "#f2f2ef";
 
   setTimeout(() => {
