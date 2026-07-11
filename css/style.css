@@ -187,3 +187,20 @@ button:disabled{
         transform:rotate(360deg);
     }
 }
+
+@media (max-width:350px){
+
+  body {
+    padding: 20px 15px 90px 15px;
+  }
+
+}
+
+@media (max-width:375px){
+
+  body {
+    padding: 20px 15px 90px 15px;
+  }
+
+
+}
