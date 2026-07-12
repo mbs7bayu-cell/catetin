@@ -71,6 +71,10 @@ body{
   font-weight:bold;
 }
 
+.logoutBtn:hover, .editBtn:hover {
+  background-color: var(--text);
+}
+
 .editBtn{
   width:100%;
   padding:14px;

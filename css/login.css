@@ -33,6 +33,10 @@
   box-shadow:0 4px 10px rgba(0,0,0,0.2);
 }
 
+#loginBtn:hover, #registerBtn {
+  background-color: var(--text);
+}
+
 .btnAdmin:hover{
   background:#037a52;
 }
