@@ -622,8 +622,9 @@ syncToggleSaldo();
       }
 
       document.getElementById("userInfo").innerHTML =
-        `<b>${(profil.nama || user.noHp).toLowerCase()
-                                        .replace(/^./, c => c.toUpperCase())}, silakan catat keuanganmu.</b>`;
+        `<b>${(profil.nama || user.noHp)
+                                    .toLowerCase()
+                                    .replace(/\b\w/g, c => c.toUpperCase())}, silakan catat keuanganmu.</b>`;
     }
 
   }
