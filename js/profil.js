@@ -109,6 +109,9 @@ function resetForm(){
 
 document.addEventListener("DOMContentLoaded", () => {
 
+      setBottomNavActive("user-profil");
+
+
   loadTheme();
 
 });

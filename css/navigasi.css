@@ -21,9 +21,8 @@
 
 .bottomNav button{
   flex: 1;
-
   margin: 0;
-  padding: 4px;
+  padding: 4px 4px 8px;
 
   background: none;
   border: none;
@@ -36,6 +35,29 @@
 
   color: var(--text);
   font-size: 15px;
+
+  position: relative;
+}
+
+.bottomNav button::after{
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+
+  width: 24px;
+  height: 3px;
+
+  background: transparent;
+  border-radius: 999px;
+
+  transform: translateX(-50%) scaleX(0);
+  transition: .2s ease;
+}
+
+.bottomNav button.active::after{
+  background: var(--text); /* warna garis aktif */
+  transform: translateX(-50%) scaleX(1);
 }
 
 .bottomNav button span{

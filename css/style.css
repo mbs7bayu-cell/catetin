@@ -16,8 +16,8 @@
   --textSecondary:#8e8e8c;
   --cardInput:#fcfcfb;
   --borderTransaksi: #e7e6e1;
-  --cardSummaryMasuk:rgba(34,197,94,0.7);
-  --cardSummaryKeluar:rgba(239,68,68,0.7);
+  --cardSummaryMasuk:#f7f7f7;
+  --cardSummaryKeluar:#f7f7f7;
 
 }
 
@@ -39,8 +39,8 @@
   --textSecondary:#a8a8a8;
   --cardInput:#1d1d1d;
   --borderTransaksi: #444;
-  --cardSummaryMasuk:#faf9f4;
-  --cardSummaryKeluar:#faf9f4;
+  --cardSummaryMasuk:#1d1d1d;
+  --cardSummaryKeluar:#1d1d1d;
 }
 
 body{

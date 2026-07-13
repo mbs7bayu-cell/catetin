@@ -56,6 +56,9 @@ function simpan() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+      setBottomNavActive("dompet");
+
+
   loadTheme();
 
 

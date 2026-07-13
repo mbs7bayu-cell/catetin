@@ -228,6 +228,9 @@ function render(hasil) {
 
 document.addEventListener("DOMContentLoaded", async () => {
 
+    setBottomNavActive("dashboard");
+
+
   loadTheme();
 
   await loadDompet();

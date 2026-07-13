@@ -2,6 +2,9 @@ let dompetList = [];
 
 async function loadData() {
 
+    setBottomNavActive("dompet");
+
+
   const cache =
     localStorage.getItem("dompetCache");
 

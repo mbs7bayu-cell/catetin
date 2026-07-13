@@ -30,6 +30,11 @@ document.getElementById("btnImport");
 
 let dataImport = [];
 
+document.addEventListener("DOMContentLoaded", async () => {
+      setBottomNavActive("dashboard");
+
+});
+
 // ===================== pilih file =====================
 
 btnPilihFile.onclick = () => {

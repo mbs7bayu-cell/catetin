@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================= get  profil =================
 async function getProfil(){
 
+    setBottomNavActive("user-profil");
+
+
   try {
 
     const cache =

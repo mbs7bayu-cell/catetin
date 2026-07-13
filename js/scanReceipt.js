@@ -35,6 +35,13 @@ let transaksi = {};
 
 let worker = null;
 
+document.addEventListener("DOMContentLoaded", async () => {
+
+      setBottomNavActive("dashboard");
+
+    
+});
+
 async function resizeImage(file){
 
     const img =

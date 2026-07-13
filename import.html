@@ -138,27 +138,28 @@
 
 <div class="bottomNav">
 
-            <button onclick="lihatDashboard()">
-              <span>🏠</span>
-              <small>Home</small>
-            </button>
+  <button data-menu="dashboard" onclick="lihatDashboard()">
+    <span>🏠</span>
+    <small>Home</small>
+  </button>
 
-            <button onclick="lihatDompet()">
-              <span>💳</span>
-              <small>Dompet</small>
-            </button>
+  <button data-menu="dompet" onclick="lihatDompet()">
+    <span>💳</span>
+    <small>Dompet</small>
+  </button>
 
-            <button onclick="lihatLaporan()">
-              <span>📊</span>
-              <small>Laporan</small>
-            </button>
+  <button data-menu="laporan" onclick="lihatLaporan()">
+    <span>📊</span>
+    <small>Laporan</small>
+  </button>
 
-            <button onclick="lihatProfil()">
-              <span>👤</span>
-              <small>Profil</small>
-            </button>
+  <button data-menu="user-profil" onclick="lihatProfil()">
+    <span>👤</span>
+    <small>Profil</small>
+  </button>
 
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc =

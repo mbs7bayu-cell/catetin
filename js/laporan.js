@@ -121,6 +121,9 @@ function parseTanggal(trx){
 
 async function loadLaporan(){
 
+    setBottomNavActive("laporan");
+
+
   const saldoEl = document.getElementById("sisaSaldo");
   const masukEl = document.getElementById("totalMasuk");
   const keluarEl = document.getElementById("totalKeluar");
