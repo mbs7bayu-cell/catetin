@@ -21,54 +21,59 @@ async function getProfil(){
 
     setBottomNavActive("user-profil");
 
+    try {
 
-  try {
+        const {
+            data,
+            error
+        } = await db
+            .from("users")
+            .select(`
+                id_user,
+                no_hp,
+                nama,
+                gmail,
+                role
+            `)
+            .eq("id_user", user.userId)
+            .single();
 
-    const cache =
-      sessionStorage.getItem("profil");
+        if(error){
 
-    let r = [];
+            console.error(
+                "Gagal mengambil profil:",
+                error
+            );
 
-    if(cache){
-
-      r = JSON.parse(cache);
-
-    }else{
-
-        const res = await fetch(
-          API + "?mode=getProfil&id_user=" + user.userId
-        );
-
-        r = await res.json();
-
-        sessionStorage.setItem(
-        "profil",
-        JSON.stringify(r)
-        );
-        
-    }
-
-        console.log(r);
-
-        if(!r.ok){
-          listProfil.innerText = "Gagal memuat";
-          return;
+            return;
         }
 
-        const n = r.data;
+        console.log("Data profil:", data);
 
-        namaUser.innerHTML = `
-          ${n.nama}
-        `;
+        // ==========================
+        // Tampilkan nama
+        // ==========================
 
-        gmailUser.innerHTML = `
-          ${n.gmail}
-        `;
+        namaUser.innerHTML =
+            data.nama || "-";
 
-  } catch(err){
-    console.log(err);
-  }
 
+        // ==========================
+        // Tampilkan Gmail
+        // ==========================
+
+        gmailUser.innerHTML =
+            data.gmail || "-";
+
+
+    } catch(err){
+
+        console.error(
+            "Error getProfil:",
+            err
+        );
+
+    }
 }
 
 function aturProfil(){

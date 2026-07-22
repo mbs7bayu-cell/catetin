@@ -151,6 +151,10 @@ height:44px;
   box-sizing:border-box;
 }
 
+.hidden {
+  display: none;
+}
+
 .card {
   width: 300px;
   margin: 50px auto;

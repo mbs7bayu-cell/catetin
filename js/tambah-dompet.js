@@ -1,5 +1,5 @@
 
-function simpan() {
+async function simpan() {
 
   const btn = document.getElementById("btnSimpan");
 
@@ -9,49 +9,35 @@ function simpan() {
     localStorage.getItem("activeUser")
   );
 
-  const data = {
-    mode: "create_dompet",
-    id_user: user.userId,
-    nama: document.getElementById("nama").value,
-    tipe: document.getElementById("tipe").value
-  };
-
-  // 🔥 tampilkan loading
   btn.disabled = true;
   btn.innerText = "Menyimpan...";
 
-  fetch(API, {
-    method: "POST",
-    body: JSON.stringify(data)
-  })
-  .then(res => res.json())
-  .then(res => {
+  const hasil = await tambahDompet({
+    id_user: user.userId,
+    nama: document.getElementById("nama").value.trim(),
+    tipe: document.getElementById("tipe").value
+  });
 
-    if(res.ok){
+  if (hasil.ok) {
 
-      localStorage.removeItem("dompetCache");
-      sessionStorage.removeItem("dompet");
-      sessionStorage.removeItem("laporan");
-      localStorage.removeItem("dashboard");
-      
-      btn.innerText = "Berhasil ✔";
-      
-      setTimeout(() => {
-        window.location.href = "dompet.html";
-      }, 800);
+    localStorage.removeItem("dompetCache");
+    sessionStorage.removeItem("dompet");
+    sessionStorage.removeItem("laporan");
+    localStorage.removeItem("dashboard");
 
-    } else {
-      showToast("Gagal: " + res.msg);
-      btn.disabled = false;
-      btn.innerText = "Simpan";
-    }
+    btn.innerText = "Berhasil ✔";
 
-  })
-  .catch(() => {
-    showToast("Error server");
+    setTimeout(() => {
+      window.location.href = "dompet.html";
+    }, 800);
+
+  } else {
+
+    showToast(hasil.error);
     btn.disabled = false;
     btn.innerText = "Simpan";
-  });
+
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -26,11 +26,7 @@ async function loadDompet(){
         location.href = "login.html";
       }
 
-      const res = await fetch(
-        `${API}?mode=dompet&userId=${user.userId}`
-      );
-
-      data = await res.json();
+      data = await getDompet(user.userId);
 
       sessionStorage.setItem(
         "dompet",
@@ -51,7 +47,7 @@ async function loadDompet(){
         const opt =
           document.createElement("option");
 
-        opt.value = d.id_sumber;
+        opt.value = d.id;
 
         opt.textContent =
           `${d.nama} (${d.tipe}) - Rp ${Number(d.saldo).toLocaleString("id-ID")}`;
@@ -137,25 +133,12 @@ async function simpanPengeluaran(){
   // ================= DATA =================
 
   const data = {
-
-    mode: "tambah_pengeluaran",
-
-    id_user: user.userId,
-
-    jenis: "keluar",
-
-    sumber_asal: sumberDana,
-
-    sumber_tujuan: "",
-
-    kategori: kategori,
-
-    nominal: nominalAngka,
-
-    biaya_admin: 0,
-
-    catatan: catatan
-  };
+    p_id_user: user.userId,
+    p_sumber_asal: sumberDana,
+    p_kategori: kategori.toLowerCase(),
+    p_nominal: nominalAngka,
+    p_catatan: catatan
+};
 
   // ================= LOADING =================
 
@@ -171,27 +154,12 @@ async function simpanPengeluaran(){
 
   try{
 
-    const res = await fetch(API, {
+    const { error } =
+        await db.rpc("simpan_pengeluaran", data);
 
-      method: "POST",
+    if(error) throw error;
 
-      body: JSON.stringify(data)
-
-    });
-
-    const hasil =
-      await res.json();
-
-    const pesan =
-      "✅ Pengeluaran dari <b>" +
-      kategori +
-      "</b> sebesar <b>Rp " +
-      new Intl.NumberFormat("id-ID").format(
-        getNumber(nominal)
-      ) +
-      "</b> berhasil disimpan.";
-
-    if(hasil.ok){
+    
 
       //update dashboard dan laporan
           localStorage.removeItem("dompetCache");
@@ -206,7 +174,7 @@ async function simpanPengeluaran(){
         "Pengeluaran berhasil"
       );
 
-      status.innerHTML = "✅ Pengeluaran dari <b>" + kategori + "</b> sebesar <b>Rp " + new Intl.NumberFormat("id-ID").format(getNumber(nominal)) + "</b> berhasil disimpan.";
+      status.innerHTML = "✅ Pengeluaran berhasil.";
 
 
       setTimeout(() => {
@@ -215,31 +183,17 @@ async function simpanPengeluaran(){
         btn.innerText = "Simpan";
         btn.disabled = false;
 
-        sessionStorage.setItem(
-          "toastMessage",
-          pesan
-        );
         window.location.href =
           "dashboard.html";
 
       }, 800);
 
-    }else{
-
-      showToast(
-        hasil.msg || "Gagal"
-      );
-
-      btn.disabled = false;
-
-      btn.innerText = "Simpan";
-    }
-
   }catch(err){
 
     console.error(err);
 
-    showToast("Error server");
+    showToast(err.message);
+
 
     btn.disabled = false;
 
@@ -299,34 +253,28 @@ let semuaKategori = [];
 
 async function loadKategori(jenis){
 
-  const user = JSON.parse(
-    sessionStorage.getItem("user") ||
-    localStorage.getItem("user") ||
-    localStorage.getItem("activeUser")
-  );
+    const user = JSON.parse(
+        sessionStorage.getItem("user") ||
+        localStorage.getItem("user") ||
+        localStorage.getItem("activeUser")
+    );
 
-  try{
+    const { data, error } = await db
+        .from("categories")
+        .select("nama_kategori")
+        .eq("id_user", user.userId)
+        .eq("jenis", jenis)
+        .order("nama_kategori");
 
-    const url =
-      API +
-      "?mode=get_kategori&userId=" +
-      user.userId +
-      "&jenis=" +
-      jenis;
+         console.log(data);
+    console.log(error);
 
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if(!Array.isArray(data)){
-      console.error("Response bukan array:", data);
-      return;
+    if(error){
+        console.error(error);
+        return;
     }
 
-    semuaKategori = data.filter(k => k);
-
-  }catch(err){
-    console.error("loadKategori error:", err);
-  }
+    semuaKategori = data.map(x => x.nama_kategori);
 }
 
 // ================== click diluar kategori =================

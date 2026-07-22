@@ -94,6 +94,12 @@ fileInput.onchange = async function(){
         const dompetSelect =
         document.getElementById("dompetSelect");
 
+        console.log("Value dompetSelect:", dompetSelect.value);
+        console.log("Options:", [...dompetSelect.options].map(o => ({
+            value: o.value,
+            text: o.text
+        })));
+
         // isi dompet sumber ke semua transaksi
         dataImport.forEach(trx=>{
             trx.dompet = dompetSelect.value;
@@ -373,100 +379,7 @@ function tampilkanPreview(data){
 
 // ===================== import =====================
 
-btnImport.onclick = async () => {
-
-    const idDompet =
-    document.getElementById("dompetSelect").value;
-
-    if(!idDompet){
-
-        alert("Pilih dompet terlebih dahulu.");
-
-        return;
-
-    }
-
-    dataImport.forEach(trx=>{
-
-        trx.dompet = idDompet;
-
-    });
-    
-    const transaksi = dataImport.filter(x => x.dipilih);
-
-    if(transaksi.length === 0){
-        alert("Belum ada transaksi yang dipilih.");
-        return;
-    }
-
-    
-    const transferBelumLengkap = transaksi.find(trx =>
-        trx.jenis === "transfer" &&
-        !trx.dompetTujuan
-    );
-
-    if(transferBelumLengkap){
-
-        alert("Masih ada transaksi transfer yang belum dipilih dompet tujuannya.");
-
-        return;
-
-    }
-
-    btnImport.disabled = true;
-    btnImport.textContent = "Mengimport...";
-
-    try{
-
-        console.log(JSON.stringify(transaksi, null, 2));
-        const res = await fetch(API,{
-            method:"POST",
-            body:JSON.stringify({
-
-                action:"importTransaksi",
-
-                id_user:user.userId,
-
-                transaksi:transaksi
-
-            })
-        });
-
-        const hasil = await res.json();
-
-        setTimeout(() => {
-
-            // Hapus cache agar dashboard mengambil data terbaru
-            sessionStorage.removeItem("dompet");
-            sessionStorage.removeItem("laporan");
-            localStorage.removeItem("dashboard");
-
-            const pesan = 
-        `✅ Berhasil import ${hasil.jumlah} transaksi, cek pada laporan sesuai tanggal transaksi dibuat.`;
-            
-            sessionStorage.setItem(
-            "toastMessage",
-            pesan
-            );
-
-        window.location.href =
-          "dashboard.html";
-            
-
-        }, 1200);
-
-    }catch(err){
-
-        console.error(err);
-
-        alert("Import gagal.");
-
-    }
-
-    btnImport.disabled = false;
-    btnImport.textContent = "Import Transaksi";
-
-};
+btnImport.onclick = prosesImport;
 
 // ===================== parser CSV =====================
 
@@ -850,4 +763,54 @@ function detectProvider(text){
         return "bsi";
 
     return "unknown";
+}
+
+// ======================== proses import supabase =======================
+
+async function prosesImport(){
+
+    const dipilih =
+        dataImport.filter(t => t.dipilih);
+
+    try{
+
+        console.log(dipilih);
+
+        const hasil =
+            await importTransaksi(
+                user.userId,
+                dipilih
+            );
+
+        if(hasil.success){
+
+            showToast(
+                `Berhasil import ${hasil.jumlah} transaksi`
+            );
+
+            localStorage.removeItem("dashboard");
+            sessionStorage.removeItem("laporan");
+            sessionStorage.removeItem("dompet");
+
+            setTimeout(() => {
+
+                window.location.href =
+                    "dashboard.html";
+
+            },800);
+
+        }else{
+
+            showToast(hasil.message);
+
+        }
+
+    }catch(err){
+
+        console.error(err);
+
+        showToast("Import gagal");
+
+    }
+
 }

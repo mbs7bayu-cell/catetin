@@ -108,25 +108,14 @@ function syncToggleSaldo() {
 // ================== parse tanggal ===============
 function parseTanggal(trx){
 
-  // timestamp baru
-  if(trx.timestamp){
-
-    return new Date(
-      Number(trx.timestamp)
-    );
+  // Data Supabase
+  if(trx.tanggal){
+    return new Date(trx.tanggal);
   }
 
-  // data lama
-  if(trx.tanggal){
-
-    const pecah =
-      trx.tanggal.split("-");
-
-    return new Date(
-      Number(pecah[0]),
-      Number(pecah[1]) - 1,
-      Number(pecah[2])
-    );
+  // Data lama Apps Script (timestamp)
+  if(trx.timestamp){
+    return new Date(Number(trx.timestamp));
   }
 
   return new Date();
@@ -231,8 +220,8 @@ saldoDisembunyikan =
     hasil.transaksi || [];
 
   transaksi.sort((a, b) =>
-    (b.timestamp || 0) -
-    (a.timestamp || 0)
+    (b.tanggal || 0) -
+    (a.tanggal || 0)
   );
 
   if(transaksi.length === 0){
@@ -385,19 +374,15 @@ async function loadDashboard(){
 
   try{
 
-    const res = await fetch(
-      API +
-      "?mode=dashboard&userId=" +
-      user.userId
-    );
-
-    const hasil =
-      await res.json();
+    const hasil = await getDashboard(user.userId);
 
     localStorage.setItem(
       "dashboard",
       JSON.stringify(hasil)
     );
+
+    console.log(hasil);
+console.log(hasil.dompet);
 
         // simpan daftar dompet
     if (hasil.dompet) {
@@ -484,9 +469,9 @@ function formatTanggal(trx){
 
   // ================= DATA BARU =================
 
-  if(trx.timestamp){
+  if(trx.tanggal){
 
-    return new Date(trx.timestamp)
+    return new Date(trx.tanggal)
       .toLocaleString("id-ID", {
 
         timeZone: "Asia/Jakarta",
@@ -530,30 +515,27 @@ async function hapusTransaksi(id){
 
   try{
 
-    const res = await fetch(API, {
-      method: "POST",
-      body: JSON.stringify({
-        mode: "hapusTransaksi",
-        id: id,
-        userId: user.userId
-      })
+        const { data, error } = await db.rpc("hapus_transaksi", {
+        p_id: id,
+        p_user: user.userId
     });
 
-    const hasil = await res.json();
+    if (error) throw error;
 
-    if(hasil.success){
-      
-      localStorage.removeItem("dompetCache");
+    if (data.success) {
 
-      sessionStorage.removeItem("dompet");
-      sessionStorage.removeItem("laporan");
-      localStorage.removeItem("dashboard");
-      showToast("Transaksi berhasil dihapus");
-      loadDashboard();
-    }else{
-      showToast(
-        hasil.msg || "Gagal menghapus transaksi"
-      );
+        sessionStorage.removeItem("dompet");
+        sessionStorage.removeItem("laporan");
+        localStorage.removeItem("dashboard");
+
+        showToast("Transaksi berhasil dihapus");
+
+        loadDashboard();
+
+    } else {
+
+        showToast(data.message);
+
     }
 
   }catch(err){
@@ -586,62 +568,108 @@ window.open(link, "_blank");
 
 }
 
+// ================ cek profil user ================
+async function cekProfilUser(){
+
+    try {
+
+        const {
+            data: profil,
+            error
+        } = await db
+            .from("users")
+            .select("nama, gmail")
+            .eq("id_user", user.userId)
+            .single();
+
+        if(error){
+            console.error(
+                "Gagal mengecek profil:",
+                error
+            );
+
+            return null;
+        }
+
+        if(
+            !profil.nama ||
+            !profil.gmail
+        ){
+
+            showToast(
+                "Profil belum lengkap. Silakan isi nama dan Gmail di menu Profil."
+            );
+
+        }
+
+        return profil;
+
+    } catch(err){
+
+        console.error(
+            "Gagal mengecek profil:",
+            err
+        );
+
+        return null;
+    }
+
+}
+
 // ================= LOAD =================
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  loadThemeDashboard();
+    loadThemeDashboard();
 
-syncToggleSaldo();
+    syncToggleSaldo();
 
-  const pesan = sessionStorage.getItem("toastMessage");
+    const pesan =
+        sessionStorage.getItem("toastMessage");
 
-  if (pesan) {
-    showToast(pesan);
-    sessionStorage.removeItem("toastMessage");
-  }
+    if (pesan) {
 
-  if (user) {
+        showToast(pesan);
 
-    const res = await fetch(
-      API + "?mode=getProfil&id_user=" + user.userId
-    );
+        sessionStorage.removeItem(
+            "toastMessage"
+        );
 
-    const r = await res.json();
-
-    if (r.ok) {
-
-      const profil = r.data;
-
-      if (!profil.nama || !profil.gmail) {
-
-        showToast("Lengkapi profil terlebih dahulu");
-
-        setTimeout(() => {
-          location.href = "profil.html";
-        }, 1000);
-
-        return;
-      }
-
-      document.getElementById("userInfo").innerHTML =
-        `<b>${(profil.nama || user.noHp)
-  .toLowerCase()
-  .replace(/\b\w/g, c => c.toUpperCase())}, silakan catat keuanganmu.</b>`;
     }
 
-  }
+    // Ambil profil dari Supabase
+    const profil =
+        await cekProfilUser();
 
-  const btn = document.getElementById("btnToggleSaldo");
+    // Tampilkan nama user
+    const namaTampil =
+        profil?.nama ||
+        user.noHp;
 
-  if (btn) {
-    btn.textContent =
-      saldoDisembunyikan
-        ? "🙈"
-        : "👁";
-  }
+    document.getElementById(
+        "userInfo"
+    ).innerHTML =
+        `<b>${namaTampil
+            .toLowerCase()
+            .replace(/\b\w/g, c =>
+                c.toUpperCase()
+            )}, silakan catat keuanganmu.</b>`;
 
-  await loadDashboard();
+    const btn =
+        document.getElementById(
+            "btnToggleSaldo"
+        );
+
+    if (btn) {
+
+        btn.textContent =
+            saldoDisembunyikan
+                ? "🙈"
+                : "👁";
+
+    }
+
+    await loadDashboard();
 
 });
 

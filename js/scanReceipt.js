@@ -322,168 +322,6 @@ function normalNominal(str){
 
 }
 
-function extractTanggal(text){
-
-    const pola=[
-
-        /\d{2}\/\d{2}\/\d{4}/,
-
-        /\d{2}-\d{2}-\d{4}/,
-
-        /\d{4}-\d{2}-\d{2}/,
-
-        /\d{2}\s+[A-Za-z]{3,9}\s+\d{4}/
-
-    ];
-
-    for(const p of pola){
-
-        const m=text.match(p);
-
-        if(m){
-
-            return formatTanggal(m[0]);
-
-        }
-
-    }
-
-    return "";
-
-}
-
-function formatTanggal(tgl){
-
-    tgl = tgl.trim();
-
-    // 30/06/2026
-    if(/^\d{2}\/\d{2}\/\d{4}$/.test(tgl)){
-
-        const [h,b,t] = tgl.split("/");
-
-        return `${t}-${b}-${h}`;
-
-    }
-
-    // xx-xx-xxxx
-    if(/^\d{2}-\d{2}-\d{4}$/.test(tgl)){
-
-        const [a,b,t] = tgl.split("-");
-
-        // Jika angka pertama > 12 berarti dd-MM-yyyy
-        if(Number(a) > 12){
-
-            return `${t}-${b}-${a}`;
-
-        }
-
-        // Jika angka kedua > 12 berarti MM-dd-yyyy
-        if(Number(b) > 12){
-
-            return `${t}-${a}-${b}`;
-
-        }
-
-        // Jika keduanya <=12, default Indonesia (dd-MM-yyyy)
-        return `${t}-${b}-${a}`;
-
-    }
-
-    // 2026-06-30
-    if(/^\d{4}-\d{2}-\d{2}$/.test(tgl)){
-
-        return tgl;
-
-    }
-
-    // 19 JUN 2026 / 19 Jun 2026 / 19 Juni 2026
-    const bulan = {
-
-        jan:"01",
-        januari:"01",
-
-        feb:"02",
-        februari:"02",
-
-        mar:"03",
-        maret:"03",
-
-        apr:"04",
-        april:"04",
-
-        mei:"05",
-
-        jun:"06",
-        juni:"06",
-
-        jul:"07",
-        juli:"07",
-
-        agu:"08",
-        agustus:"08",
-        aug:"08",
-        august:"08",
-
-        sep:"09",
-        september:"09",
-
-        okt:"10",
-        oktober:"10",
-        oct:"10",
-        october:"10",
-
-        nov:"11",
-        november:"11",
-
-        des:"12",
-        desember:"12",
-        dec:"12",
-        december:"12"
-
-    };
-
-    const m =
-        tgl.match(
-            /(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/
-        );
-
-    if(m){
-
-        const hari = m[1].padStart(2,"0");
-        const bln = bulan[m[2].toLowerCase()];
-        const tahun = m[3];
-
-        if(bln){
-
-            return `${tahun}-${bln}-${hari}`;
-
-        }
-
-    }
-
-    return "";
-
-}
-
-function extractJam(text){
-
-    if(!jam){
-
-        const now = new Date();
-
-        jam =
-            now.toTimeString()
-            .substring(0,5);
-
-    }
-
-    const m =
-        text.match(/\d{2}:\d{2}(?::\d{2})?/);
-
-    return m ? m[0] : "";
-
-}
-
 function extractMerchant(text){
 
     const lines = text
@@ -541,8 +379,6 @@ async function handleFile(){
 
         await loadKategori();
 
-        await loadProfil();
-
         transaksi = await parseReceipt(file);
 
         isiKategori(
@@ -586,10 +422,6 @@ function parseReceiptText(text){
 
         provider:"manual",
 
-        tanggal:extractTanggal(text),
-
-        jam:extractJam(text),
-
         nominal:extractNominal(text),
 
         jenis:"keluar",
@@ -626,12 +458,6 @@ async function OCR(file){
 
 function tampilkanPreview(){
 
-    document.getElementById("tanggal").value =
-        transaksi.tanggal;
-
-    document.getElementById("jam").value =
-        transaksi.jam;
-
     document.getElementById("nominal").value =
     "Rp " + transaksi.nominal.toLocaleString("id-ID");
 
@@ -655,11 +481,6 @@ function tampilkanPreview(){
 
 function validasiTransaksi(){
 
-    if(!transaksi.tanggal){
-        alert("Tanggal belum diisi.");
-        tanggal.focus();
-        return false;
-    }
 
     if(transaksi.nominal <= 0){
         alert("Nominal harus lebih dari Rp 0.");
@@ -680,7 +501,7 @@ function validasiTransaksi(){
     }
     
     const dompet = daftarDompet.find(
-        d => d.id_sumber == transaksi.dompet
+        d => d.id == transaksi.dompet
     );
 
     if(
@@ -702,8 +523,6 @@ function validasiTransaksi(){
 
 btnSimpan.onclick = async()=>{
 
-    transaksi.tanggal = tanggal.value;
-    transaksi.jam = jam.value;
     transaksi.nominal = getNumber(nominal.value);
     transaksi.jenis = jenis.value;
     transaksi.kategori = kategori.value;
@@ -719,45 +538,35 @@ btnSimpan.onclick = async()=>{
 
     try{
 
-        const res = await fetch(API,{
-            method:"POST",
-            body:JSON.stringify({
-
-                action:"importTransaksi",
-
-                id_user:user.userId,
-
-                transaksi:[transaksi]
-
-            })
-        });
-
-        const hasil = await res.json();
-
-        if(hasil.success){
-
-            // Hapus cache agar dashboard mengambil data terbaru
-            sessionStorage.removeItem("dompet");
-            sessionStorage.removeItem("laporan");
-            localStorage.removeItem("dashboard");
-
-            sessionStorage.setItem(
-                "toastMessage",
-                "✅ Transaksi berhasil disimpan."
-            );
-
-            location.href = "dashboard.html";
-
-        }else{
-
-            alert(hasil.message || "Gagal menyimpan.");
-
+    const { data, error } = await db.rpc(
+        "import_transaksi",
+        {
+            p_user: user.userId,
+            p_transaksi: [transaksi]
         }
+    );
+
+    if(error) throw error;
+
+    if(!data.success){
+        throw new Error(data.message);
+    }
+
+    sessionStorage.removeItem("dompet");
+    sessionStorage.removeItem("laporan");
+    localStorage.removeItem("dashboard");
+
+    sessionStorage.setItem(
+        "toastMessage",
+        "✅ Transaksi berhasil disimpan."
+    );
+
+    location.href = "dashboard.html";
 
     }catch(err){
 
         console.error(err);
-        alert("Terjadi kesalahan.");
+        alert(err.message);
 
     }finally{
 

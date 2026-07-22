@@ -149,101 +149,77 @@ async function simpanTransfer(){
     return;
   }
 
-  // ================= DATA =================
-
-  const data = {
-
-    mode: "transfer",
-
-    id_user: user.userId,
-
-    jenis: "transfer",
-
-    sumber_asal: sumberAsal,
-
-    sumber_tujuan: sumberTujuan,
-
-    kategori: "Transfer",
-
-    nominal: nominal,
-
-    biaya_admin: biayaAdmin,
-
-    catatan: catatan
-  };
-
-  // ================= LOADING =================
-
-  showLoading("mohon tunggu...");
+  showLoading("Mohon tunggu...");
 
   btn.disabled = true;
   btn.innerText = "Memproses...";
 
   try{
 
-    const res = await fetch(API, {
+      const { data, error } = await db.rpc("simpan_transfer", {
+          p_id_user: user.userId,
+          p_sumber_asal: sumberAsal,
+          p_sumber_tujuan: sumberTujuan,
+          p_nominal: nominal,
+          p_biaya_admin: biayaAdmin,
+          p_kategori: "Transfer",
+          p_catatan: catatan,
+          p_tanggal: new Date()
+      });
 
-      method: "POST",
+      if(error) throw error;
 
-      body: JSON.stringify(data)
+      if(data.success){
 
-    });
+          const pesan =
+              `✅ Transfer sebesar <b>Rp ${new Intl.NumberFormat("id-ID").format(nominal)}</b> berhasil disimpan.`;
 
-    const hasil = await res.json();
-
-    const pesan =
-      "✅ Transfer sebesar <b>Rp " + new Intl.NumberFormat("id-ID").format(nominal) + "</b> berhasil disimpan.";
-
-    if(hasil.ok){
-
-      //update dashboard dan laporan
           localStorage.removeItem("dompetCache");
+          sessionStorage.removeItem("dompet");
+          sessionStorage.removeItem("laporan");
+          localStorage.removeItem("dashboard");
 
+          btn.innerText = "Berhasil ✔";
 
-      sessionStorage.removeItem("dompet");
-      sessionStorage.removeItem("laporan");
-      localStorage.removeItem("dashboard");
+          status.innerHTML = pesan;
 
-      btn.innerText = "Berhasil ✔";
+          showToast("Transfer berhasil");
 
-      showToast("Transfer berhasil");
+          setTimeout(() => {
 
-      status.innerHTML = "✅ Transfer sebesar <b>Rp " + new Intl.NumberFormat("id-ID").format(nominal) + "</b> berhasil disimpan.";
+              resetForm();
 
+              btn.disabled = false;
+              btn.innerText = "Transfer";
 
-      setTimeout(() => {
+              sessionStorage.setItem("toastMessage", pesan);
 
-        resetForm();
-        btn.innerText = "Transfer";
-        btn.disabled = false;
-        sessionStorage.setItem(
-          "toastMessage",
-          pesan
-        );
-        window.location.href =
-          "dashboard.html";
+              location.href = "dashboard.html";
 
-      }, 800);
+          }, 800);
 
-    }else{
+      }else{
 
-      showToast(hasil.msg || "Transfer gagal");
+          showToast(data.message || "Transfer gagal");
 
-      btn.disabled = false;
-      btn.innerText = "Transfer";
-    }
+          btn.disabled = false;
+          btn.innerText = "Transfer";
+
+      }
 
   }catch(err){
 
-    console.error(err);
+      console.error(err);
 
-    showToast("Error server");
+      showToast(err.message || "Error server");
 
-    btn.disabled = false;
-    btn.innerText = "Transfer";
-  } finally {
+      btn.disabled = false;
+      btn.innerText = "Transfer";
 
-    hideLoading();
+  }finally{
+
+      hideLoading();
+
   }
 
 }

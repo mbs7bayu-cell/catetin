@@ -103,18 +103,17 @@ function namaBulan(key){
 
 function parseTanggal(trx){
 
-  // ================= timestamp baru =================
-
-  if(trx.timestamp){
-
-    return new Date(
-      Number(trx.timestamp)
-    );
+  // Data Supabase
+  if(trx.tanggal){
+    return new Date(trx.tanggal);
   }
 
-  // ================= fallback data lama =================
+  // Data lama Apps Script (timestamp)
+  if(trx.timestamp){
+    return new Date(Number(trx.timestamp));
+  }
 
-  return new Date(trx.tanggal);
+  return new Date();
 }
 
 // ================= LOAD =================
@@ -147,11 +146,7 @@ async function loadLaporan(){
 
   try{
 
-    const res = await fetch(
-      API + "?mode=laporan&userId=" + user.userId
-    );
-
-    const hasil = await res.json();
+    const hasil = await getLaporan(user.userId);
 
     sessionStorage.setItem(
       "laporan",
@@ -196,15 +191,9 @@ function renderKategori(data){
       kategoriMap[kategoriKey] = {
 
         nama:
-          kategoriAsli
-            .toLowerCase()
-            .split(" ")
-            .map(kata =>
-              kata.charAt(0)
-                .toUpperCase() +
-              kata.slice(1)
-            )
-            .join(" "),
+              kategoriAsli
+              .trim()
+              .replace(/\b\w/g, c => c.toUpperCase()),
 
         jenis: trx.jenis,
 
@@ -748,6 +737,7 @@ function renderLaporan(hasil){
     }
 
     bulanKeys
+      .sort()
       .reverse()
       .forEach(key => {
 

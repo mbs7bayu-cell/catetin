@@ -34,11 +34,9 @@ async function loadData() {
       localStorage.getItem("activeUser")
     );
 
-    const res = await fetch(
-      `${API}?mode=dompet&userId=${user.userId}`
-    );
+    console.log(user.userId);
 
-    dompetList = await res.json();
+    dompetList = await getDompet(user.userId);
 
     localStorage.setItem(
       "dompetCache",
@@ -93,7 +91,7 @@ function render() {
           <b>Rp ${Number(d.saldo).toLocaleString("id-ID")}</b>
 
           <button
-            onclick="editDompet('${d.id_sumber}')"
+            onclick="editDompet('${d.id}')"
             class="btnEdit"
           >
             Edit
@@ -136,7 +134,7 @@ window.editDompet = function(id){
 
   const dompet =
     dompetList.find(d =>
-      String(d.id_sumber) === String(id)
+      String(d.id) === String(id)
     );
 
   if(!dompet) return;
@@ -180,25 +178,13 @@ async function simpanEditDompet(){
 
 
 
-  const res = await fetch(API, {
-
-    method: "POST",
-
-    body: JSON.stringify({
-
-      mode: "edit_dompet",
-
-      id_sumber: editId,
-
-      nama: nama,
-
-      tipe: tipe
-
-    })
+  const hasil = await updateDompet({
+      id: editId,
+      nama,
+      tipe
   });
 
-  const hasil =
-    await res.json();
+  console.log("HASIL EDIT:", hasil);
 
   if(hasil.ok){
 

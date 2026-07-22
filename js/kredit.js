@@ -38,9 +38,15 @@ async function loadData() {
   try {
 
 
-  const res = await fetch(`${API}?mode=kredit&userId=${user.userId}`);
+  const { data, error } = await db
+    .from("credits")
+    .select("*")
+    .eq("id_user", user.userId)
+    .order("created_at", { ascending: false });
 
-  kreditList = await res.json();
+    if(error) throw error;
+
+    kreditList = data;
 
   localStorage.setItem(
       "kreditList",
@@ -104,14 +110,14 @@ function render(hasil) {
 
       tombol = `
         <button
-          onclick="event.stopPropagation(); openBayarKredit('${d.id_kredit}')"
+          onclick="event.stopPropagation(); openBayarKredit('${d.id}')"
           class="btnBayarKredit"
         >
           Bayar
         </button>
 
         <button
-          onclick="event.stopPropagation(); hapusKredit('${d.id_kredit}')"
+          onclick="event.stopPropagation(); hapusKredit('${d.id}')"
           class="btnHapusKredit"
         >
           Hapus
@@ -124,7 +130,7 @@ function render(hasil) {
 
       tombol = `
         <button
-          onclick="event.stopPropagation(); openBayarKredit('${d.id_kredit}')"
+          onclick="event.stopPropagation(); openBayarKredit('${d.id}')"
           class="btnBayarKredit"
         >
           Bayar
@@ -137,7 +143,7 @@ function render(hasil) {
 
       tombol = `
         <button
-          onclick="event.stopPropagation(); hapusKredit('${d.id_kredit}')"
+          onclick="event.stopPropagation(); hapusKredit('${d.id}')"
           class="btnHapusKredit"
         >
           Hapus
@@ -160,7 +166,7 @@ function render(hasil) {
     card.className = "kreditCard";
 
     card.onclick = () => {
-      bukaDetailKredit(d.id_kredit);
+      bukaDetailKredit(d.id);
     };
 
     card.innerHTML = `
@@ -181,7 +187,7 @@ function render(hasil) {
           </div>
 
           <button
-            onclick="event.stopPropagation(); openEditKredit('${d.id_kredit}')"
+            onclick="event.stopPropagation(); openEditKredit('${d.id}')"
             class="btnEditKredit"
           >
             ✏️
@@ -358,34 +364,6 @@ async function simpanKredit(){
     }
   }
 
-  // ================= DATA =================
-
-  const data = {
-
-    mode: "buat_kredit",
-
-    id_user: user.userId,
-
-    nama_kredit: namaKredit,
-
-    jenis_kredit: jenisKredit,
-
-    nominal_kredit: getNumber(nominalKredit),
-
-    nominal_pinjaman:
-      jenisKredit === "Pinjaman"
-        ? getNumber(nominalPinjaman)
-        : 0,
-
-    sumber_tujuan:
-      jenisKredit === "Pinjaman"
-        ? sumberTujuan
-        : "",
-
-    catatan: catatan
-
-  };
-
   // ================= LOADING =================
 
   btn.disabled = true;
@@ -393,20 +371,36 @@ async function simpanKredit(){
 
   try{
 
-    const res = await fetch(API, {
+      const { data, error } =
+      await db.rpc("buat_kredit",{
 
-      method: "POST",
+          p_user:user.userId,
 
-      body: JSON.stringify(data)
+          p_nama:namaKredit,
 
-    });
+          p_jenis:jenisKredit,
 
-    const hasil = await res.json();
+          p_total:getNumber(nominalKredit),
 
-    if(hasil.ok){
+          p_pinjaman:
+              jenisKredit==="Pinjaman"
+              ? getNumber(nominalPinjaman)
+              :0,
 
-      //update dashboard dan laporan
-      localStorage.removeItem("dompetCache");
+          p_wallet:
+              jenisKredit==="Pinjaman"
+              ? sumberTujuan
+              :null,
+
+          p_catatan:catatan
+
+      });
+
+      if(error) throw error;
+
+      if(!data.success){
+          throw new Error(data.message);
+      }
 
       sessionStorage.removeItem("dompet");
       sessionStorage.removeItem("laporan");
@@ -419,41 +413,25 @@ async function simpanKredit(){
 
       status.innerHTML = "✅ Kredit berhasil disimpan.";
 
+      setTimeout(()=>{
 
-      setTimeout(() => {
+          resetForm();
 
-        resetForm();
-        btn.innerText = "Simpan";
-        btn.disabled = false;
+          location.href = "kredit.html";
 
-        window.location.href = "kredit.html";
-
-      }, 800);
-
-    }else{
-
-      showToast(hasil.msg || "Gagal");
-
-      btn.disabled = false;
-      btn.innerText = "Simpan";
-    }
+      },800);
 
   }catch(err){
 
-    console.error(err);
+      console.error(err);
 
-    showToast("Error server");
+      showToast(err.message || "Gagal menyimpan kredit");
 
-    btn.disabled = false;
-    btn.innerText = "Simpan";
   }finally{
 
-  // selalu aktifkan kembali tombol
-  btn.disabled = false;
+      btn.disabled = false;
+      btn.innerText = "Simpan";
 
-  if(btn.innerText === "Menyimpan..."){
-    btn.innerText = "Simpan";
-  }
   }
 }
 
@@ -508,11 +486,7 @@ async function loadDompet(){
           location.href = "login.html";
         }
 
-          const res = await fetch(
-            `${API}?mode=dompet&userId=${user.userId}`
-          );
-
-          daftarDompet = await res.json();
+          daftarDompet = await getDompet(user.userId);
 
           sessionStorage.setItem(
             "dompet",
@@ -537,7 +511,7 @@ async function loadDompet(){
 
             const opt = document.createElement("option");
 
-            opt.value = d.id_sumber;
+            opt.value = d.id;
             opt.textContent = text;
 
             tujuan.appendChild(opt);
@@ -595,45 +569,31 @@ return;
 
 try{
 
-const res = await fetch(API, {
-  method: "POST",
-  body: JSON.stringify({
-    mode: "hapusKredit",
-    id_kredit: idKredit,
-    userId: user.userId
-  })
-});
+    const { data, error } = await db.rpc("hapus_kredit",{
+        p_credit:idKredit,
+        p_user: user.userId
+    });
 
-const hasil = await res.json();
+    if(error) throw error;
 
-if(hasil.ok){
+    if(!data.success){
+        throw new Error(data.message);
+    }
 
-  localStorage.removeItem("dompetCache");
+    localStorage.removeItem("kreditList");
+    localStorage.removeItem("dashboard");
+    sessionStorage.removeItem("laporan");
 
-      sessionStorage.removeItem("dompet");
-      sessionStorage.removeItem("laporan");
-      localStorage.removeItem("dashboard");
-      localStorage.removeItem("kreditList");
+    showToast(data.message);
 
-  showToast("Kredit berhasil dihapus");
-
-  loadData();
-
-}else{
-
-  showToast(
-    hasil.msg || "Gagal menghapus kredit"
-  );
-
-}
+    loadData();
 
 
-}catch(err){
+} catch(err){
 
-console.error(err);
+    console.error(err);
 
-showToast("Error server");
-
+    showToast(err.message || "Terjadi kesalahan");
 
 }
 
@@ -655,56 +615,55 @@ async function bayarKredit(idKredit, idDompet, nominal) {
 
   try {
 
-  const res = await fetch(API, {
-    method: "POST",
-    body: JSON.stringify({
-      mode: "bayarKredit",
-      id_kredit: idKredit,
-      id_dompet: idDompet,
-      userId: user.userId,
-      nominal: nominal
-    })
-  });
+    const { data, error } =
+    await db.rpc("bayar_kredit",{
 
-  const hasil = await res.json();
+        p_user:user.userId,
+        p_credit:idKredit,
+        p_wallet:idDompet,
+        p_nominal:nominal
 
-  if (hasil.ok) {
-    localStorage.removeItem("dompetCache");
+    });
 
-      sessionStorage.removeItem("dompet");
-      sessionStorage.removeItem("laporan");
-      localStorage.removeItem("dashboard");
-      localStorage.removeItem("kreditList");
-    showToast("Pembayaran berhasil");
-    closeBayarKredit();
-    loadData();
-    btn.innerText = "Berhasil ✔";
+    if(error) throw error;
 
-    setTimeout(() => {
+    if(!data.success){
+        throw new Error(data.message);
+    }
 
-        resetForm();
-        btn.innerText = "Simpan";
-        btn.disabled = false;
+// ================= sukses =================
 
-        window.location.href = "kredit.html";
+localStorage.removeItem("dompetCache");
+sessionStorage.removeItem("dompet");
+sessionStorage.removeItem("laporan");
+localStorage.removeItem("dashboard");
+localStorage.removeItem("kreditList");
 
-      }, 800);
-  } else {
-    showToast(hasil.msg || "Gagal bayar");
+showToast(data.message);
+
+closeBayarKredit();
+
+btn.innerText = "Berhasil ✔";
+
+setTimeout(() => {
+
     btn.disabled = false;
     btn.innerText = "Simpan";
-  }
-  } catch(err){
+
+    loadData();
+
+},800);
+
+} catch(err){
 
     console.error(err);
 
-    showToast(
-      "Error: " + err.message
-    );
+    showToast(err.message || "Terjadi kesalahan");
 
     btn.disabled = false;
     btn.innerText = "Simpan";
-  }
+
+}
       
 }
 
@@ -727,7 +686,7 @@ function openBayarKredit(idKredit) {
   daftarDompet.forEach(dompet => {
 
     select.innerHTML += `
-      <option value="${dompet.id_sumber}">
+      <option value="${dompet.id}">
         ${dompet.nama} - Rp ${Number(dompet.saldo).toLocaleString("id-ID")}
       </option>
     `;
@@ -802,11 +761,15 @@ async function bukaDetailKredit(idKredit){
       localStorage.getItem("activeUser")
     );
 
-    const res = await fetch(
-      `${API}?mode=detailKredit&idKredit=${idKredit}&userId=${user.userId}`
-    );
-
-    const data = await res.json();
+    const { data } = await db
+    .from("credit_payments")
+    .select(`
+        nominal,
+        created_at,
+        wallets(nama)
+    `)
+    .eq("id_credit",idKredit)
+    .order("created_at");
 
     if(data.length === 0){
       body.innerHTML =
@@ -820,9 +783,9 @@ async function bukaDetailKredit(idKredit){
           Rp ${Number(item.nominal).toLocaleString("id-ID")}
         </b>
         <br>
-        <small>${formatTanggal(item.tanggal)}</small>
+        <small>${formatTanggal(item.created_at)}</small>
         <br>
-        <small>Metode: ${item.nama_dompet}</small>
+        <small>Metode: ${item.wallets.nama}</small>
       </div>
     `).join("");
 
@@ -869,7 +832,7 @@ function openEditKredit(idKredit){
 
   const kredit =
     kreditList.find(
-      x => String(x.id_kredit) === String(idKredit)
+      x => String(x.id) === String(idKredit)
     );
 
   if(!kredit){
@@ -916,39 +879,41 @@ async function simpanEditKredit(){
   btn.disabled = true;
   btn.innerText = "Menyimpan...";
 
-  const res = await fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      mode:"editKredit",
-      id_kredit:selectedKreditEditId,
-      userId:user.userId,
-      nominal_kredit:nominal
-    })
-  });
+  try{ 
+    
+    const { data, error } = await db.rpc("edit_kredit",{
 
-  const hasil = await res.json();
+        p_user:user.userId,
 
-  if(hasil.ok){
-    btn.innerText = "Berhasil ✔";
+        p_credit:selectedKreditEditId,
 
-    showToast("Simpan Edit kredit berhasil");
+        p_nominal:nominal
 
-      setTimeout(() => {
+    });
 
-        resetForm();
-        btn.innerText = "Simpan";
-        btn.disabled = false;
+    if(error) throw error;
 
-        window.location.href = "kredit.html";
+    if(!data.success){
+        throw new Error(data.message);
+    }
 
-      }, 800);
+    localStorage.removeItem("kreditList");
+    localStorage.removeItem("dashboard");
+    sessionStorage.removeItem("laporan");
 
-    return;
-  } else {
-    showToast(hasil.msg || "Gagal");
+    showToast(data.message);
 
-      btn.disabled = false;
-      btn.innerText = "Simpan";
+    closeEditKredit();
+
+    loadData();
+
+  }catch(err){
+
+    console.error(err);
+
+    showToast(err.message || "Terjadi kesalahan");
+
+
   }
 
   closeEditKredit();

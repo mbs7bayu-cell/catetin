@@ -89,16 +89,27 @@ async function login(){
 
   try{
 
-    const res = await fetch(API, {
-      method:"POST",
-      body: JSON.stringify({
-        mode:"login",
-        noHp,
-        password
-      })
-    });
+    const passHash =
+      await hashPassword(password);
 
-    const hasil = await res.json();
+    const { data, error } =
+      await db.rpc("login_user", {
+        p_no_hp: noHp,
+        p_pass_hash: passHash
+      });
+
+    if (error) {
+      console.error(error);
+      status("Terjadi kesalahan saat login");
+
+      loginBtn.disabled = false;
+      registerBtn.disabled = false;
+      loginBtn.innerText = "Login";
+
+      return;
+    }
+
+    const hasil = data;
 
     const activeUserId =
       localStorage.getItem("activeUserId");
@@ -208,74 +219,159 @@ async function login(){
 
 
 
+
+
+function bukaRegister() {
+  registerBtn.classList.remove("hidden");
+  loginBtn.classList.add("hidden");
+  document.getElementById("bukaRegister").classList.add("hidden");
+    document.getElementById("bukaLogin").classList.remove("hidden");
+
+}
+
+function bukaLogin() {
+  registerBtn.classList.add("hidden");
+  loginBtn.classList.remove("hidden");
+  document.getElementById("bukaLogin").classList.add("hidden");
+  document.getElementById("bukaRegister").classList.remove("hidden");
+}
+
+
+
 async function register(){
 
-  const error = validasi();
-  if(error){
-    status(error);
-    return;
-  }
 
-  const registerBtn = document.getElementById("registerBtn");
+    const error = validasi();
 
-  const noHpRaw = document.getElementById("noHp").value.trim();
-  const noHp = formatNomorHP(noHpRaw);
-  const password = document.getElementById("password").value.trim();
-
-  status("Sedang register...");
-
-  // 🔥 disable tombol
-  registerBtn.disabled = true;
-  loginBtn.disabled = true;
-
-  registerBtn.innerText = "Memproses...";
-
-  try{
-
-    const res = await fetch(API, {
-      method:"POST",
-      body: JSON.stringify({
-        mode:"register",
-        noHp,
-        password
-      })
-    });
-
-    const hasil = await res.json();
-
-    if(!hasil.ok){
-
-      status(hasil.message || "Register gagal");
-
-      // 🔥 enable lagi kalau gagal
-      registerBtn.disabled = false;
-      loginBtn.disabled = false;
-
-      registerBtn.innerText = "Register";
-
-      return;
+    if(error){
+        status(error);
+        return;
     }
 
-    status("Register berhasil");
+    const registerBtn =
+        document.getElementById("registerBtn");
 
-    // 🔥 enable lagi setelah sukses
-    registerBtn.disabled = false;
-    loginBtn.disabled = false;
+    const loginBtn =
+        document.getElementById("loginBtn");
 
-    registerBtn.innerText = "Register";
+    const noHpRaw =
+        document.getElementById("noHp")
+        .value
+        .trim();
 
-  }catch(err){
+    const noHp =
+        formatNomorHP(noHpRaw);
 
-    status("Tidak dapat terhubung ke server");
+    const password =
+        document.getElementById("password")
+        .value
+        .trim();
 
-    console.error(err);
+    status("Sedang register...");
 
-    // 🔥 enable lagi kalau error
-    registerBtn.disabled = false;
-    loginBtn.disabled = false;
+    // Disable tombol
+    registerBtn.disabled = true;
+    loginBtn.disabled = true;
 
-    registerBtn.innerText = "Register";
-  }
+    registerBtn.innerText = "Memproses...";
+
+    try{
+
+        // =========================
+        // Hash password
+        // =========================
+
+        const passHash =
+            hashPassword(password);
+
+
+        // =========================
+        // Register ke Supabase
+        // =========================
+
+        const { data, error } =
+            await db.rpc(
+                "register_user",
+                {
+                    p_no_hp: noHp,
+                    p_pass_hash: passHash
+                }
+            );
+
+
+        // =========================
+        // Error Supabase
+        // =========================
+
+        if(error){
+
+            console.error(error);
+
+            status(
+                error.message ||
+                "Terjadi kesalahan saat register"
+            );
+
+            return;
+        }
+
+
+        // =========================
+        // Register gagal
+        // =========================
+
+        if(!data || !data.ok){
+
+            status(
+                data?.message ||
+                "Register gagal"
+            );
+
+            return;
+        }
+
+
+        // =========================
+        // Register berhasil
+        // =========================
+
+        status(
+            data.message ||
+            "Register berhasil, silakan login."
+        );
+
+        // Bersihkan input
+        document.getElementById("password")
+            .value = "";
+
+        document.getElementById("noHp")
+            .value = "";
+        
+        bukaLogin();
+
+
+    }catch(err){
+
+        console.error(err);
+
+        status(
+            "Tidak dapat terhubung ke server"
+        );
+
+    }finally{
+
+        // =========================
+        // Aktifkan tombol kembali
+        // =========================
+
+        registerBtn.disabled = false;
+        loginBtn.disabled = false;
+
+        registerBtn.innerText = "Register";
+
+    }
+
+
 }
 
 
@@ -327,51 +423,128 @@ function tutupModalLupaPassword(){
 
 async function kirimOtpReset(){
 
-  let gmail =
-    document.getElementById(
-      "gmailReset"
-    ).value;
+    let gmail =
+        document.getElementById(
+            "gmailReset"
+        ).value;
 
-  gmail = String(gmail)
-    .trim()
-    .toLowerCase();
-  
-  if(!gmail){
+    gmail = String(gmail)
+        .trim()
+        .toLowerCase();
 
-    alert("Masukkan Gmail");
 
-    return;
+    if(!gmail){
 
-  }
+        alert("Masukkan Gmail");
 
-  const res =
-    await fetch(API,{
+        return;
 
-      method:"POST",
+    }
 
-      body:JSON.stringify({
 
-        mode:"kirimOtpReset",
+    try {
 
-        gmail
+        // ==========================
+        // CEK GMAIL DI SUPABASE
+        // ==========================
 
-      })
+        const {
+            data: user,
+            error
+        } = await db
+            .from("users")
+            .select("id_user, gmail")
+            .eq("gmail", gmail)
+            .maybeSingle();
 
-    });
 
-  const data =
-    await res.json();
+        if(error){
 
-  alert(data.message);
+            console.error(error);
 
-  if(data.success){
+            alert(
+                "Terjadi kesalahan saat mencari akun"
+            );
 
-    document.getElementById(
-      "stepOtp"
-    ).style.display =
-    "block";
+            return;
 
-  }
+        }
+
+
+        if(!user){
+
+            alert(
+                "Gmail tidak ditemukan"
+            );
+
+            return;
+
+        }
+
+
+        // ==========================
+        // SIMPAN DATA RESET SEMENTARA
+        // ==========================
+
+        sessionStorage.setItem(
+            "resetUserId",
+            user.id_user
+        );
+
+        sessionStorage.setItem(
+            "resetGmail",
+            gmail
+        );
+
+
+        // ==========================
+        // KIRIM OTP VIA APPS SCRIPT
+        // ==========================
+
+        const res =
+            await fetch(API, {
+
+                method: "POST",
+
+                body: JSON.stringify({
+
+                    mode: "kirimOtpReset",
+
+                    gmail: gmail
+
+                })
+
+            });
+
+
+        const data =
+            await res.json();
+
+
+        alert(
+            data.message
+        );
+
+
+        if(data.success){
+
+            document.getElementById(
+                "stepOtp"
+            ).style.display =
+                "block";
+
+        }
+
+
+    } catch(err){
+
+        console.error(err);
+
+        alert(
+            "Tidak dapat terhubung ke server"
+        );
+
+    }
 
 }
 
@@ -379,52 +552,87 @@ async function kirimOtpReset(){
 
 async function verifikasiOtpReset(){
 
-  let gmail =
-    document.getElementById(
-      "gmailReset"
-    ).value;
+    const gmail =
+        sessionStorage.getItem(
+            "resetGmail"
+        );
 
-  gmail = String(gmail)
-    .trim()
-    .toLowerCase();
+    const otp =
+        document.getElementById(
+            "otpReset"
+        ).value
+        .trim();
 
-  const otp =
-    document.getElementById(
-      "otpReset"
-    ).value;
 
-  const res =
-    await fetch(API,{
+    if(!otp){
 
-      method:"POST",
+        alert(
+            "Masukkan kode OTP"
+        );
 
-      body:JSON.stringify({
+        return;
 
-        mode:"verifikasiOtpReset",
+    }
 
-        gmail,
 
-        otp
+    try {
 
-      })
+        const res =
+            await fetch(API, {
 
-    });
+                method: "POST",
 
-  const data =
-    await res.json();
+                body: JSON.stringify({
 
-  if(data.ok){
+                    mode: "verifikasiOtpReset",
 
-    document.getElementById(
-      "stepPassword"
-    ).style.display =
-    "block";
+                    gmail: gmail,
 
-  }else{
+                    otp: otp
 
-    alert(data.msg);
+                })
 
-  }
+            });
+
+
+        const data =
+            await res.json();
+
+
+        if(data.ok){
+
+            // Tandai OTP sudah berhasil
+            sessionStorage.setItem(
+                "resetOtpVerified",
+                "true"
+            );
+
+
+            document.getElementById(
+                "stepPassword"
+            ).style.display =
+                "block";
+
+
+        }else{
+
+            alert(
+                data.msg ||
+                "OTP tidak valid"
+            );
+
+        }
+
+
+    } catch(err){
+
+        console.error(err);
+
+        alert(
+            "Gagal memverifikasi OTP"
+        );
+
+    }
 
 }
 
@@ -432,56 +640,123 @@ async function verifikasiOtpReset(){
 
 async function simpanPasswordBaru(){
 
-  let gmail =
-    document.getElementById(
-      "gmailReset"
-    ).value;
+    const userId =
+        sessionStorage.getItem(
+            "resetUserId"
+        );
 
-  gmail = String(gmail)
-    .trim()
-    .toLowerCase();
+    const otpVerified =
+        sessionStorage.getItem(
+            "resetOtpVerified"
+        );
 
-  const password =
-    document.getElementById(
-      "passwordBaru"
-    ).value;
 
-  if(password.length < 6){
+    if(
+        !userId ||
+        otpVerified !== "true"
+    ){
 
-    alert(
-      "Password minimal 6 karakter"
-    );
+        alert(
+            "Silakan verifikasi OTP terlebih dahulu"
+        );
 
-    return;
-  }
+        return;
 
-  const res =
-    await fetch(API,{
+    }
 
-      method:"POST",
 
-      body:JSON.stringify({
+    const password =
+        document.getElementById(
+            "passwordBaru"
+        ).value
+        .trim();
 
-        mode:"resetPassword",
 
-        gmail,
+    if(password.length < 6){
 
-        password
+        alert(
+            "Password minimal 6 karakter"
+        );
 
-      })
+        return;
 
-    });
+    }
 
-  const data =
-    await res.json();
 
-  alert(data.msg);
+    try {
 
-  if(data.ok){
+        // ==========================
+        // HASH PASSWORD BARU
+        // ==========================
 
-    tutupModalLupaPassword();
+        const passHash =
+            hashPassword(password);
 
-  }
+
+        // ==========================
+        // UPDATE SUPABASE
+        // ==========================
+
+        const {
+            error
+        } = await db
+            .from("users")
+            .update({
+                pass_hash: passHash
+            })
+            .eq(
+                "id_user",
+                userId
+            );
+
+
+        if(error){
+
+            console.error(error);
+
+            alert(
+                "Gagal mengubah password"
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "Password berhasil diubah"
+        );
+
+
+        // ==========================
+        // BERSIHKAN SESSION RESET
+        // ==========================
+
+        sessionStorage.removeItem(
+            "resetUserId"
+        );
+
+        sessionStorage.removeItem(
+            "resetGmail"
+        );
+
+        sessionStorage.removeItem(
+            "resetOtpVerified"
+        );
+
+
+        tutupModalLupaPassword();
+
+
+    } catch(err){
+
+        console.error(err);
+
+        alert(
+            "Terjadi kesalahan saat mengubah password"
+        );
+
+    }
 
 }
 
@@ -527,4 +802,9 @@ function formatNomorHP(input) {
   }
 
   return nomor;
+}
+
+// =========================== pass hash 256 ======================
+function hashPassword(password) {
+    return sha256(password);
 }
