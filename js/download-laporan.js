@@ -1,12 +1,6 @@
 async function downloadLaporanPDF(bulanKey){
 
-  const res = await fetch(
-    API +
-    "?mode=laporan&userId=" +
-    user.userId
-  );
-
-  const hasil = await res.json();
+  const hasil = await getLaporan(user.userId);
 
   const data =
   hasil.bulan[bulanKey] || [];
