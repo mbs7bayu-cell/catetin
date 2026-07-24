@@ -122,48 +122,92 @@ async function loadLaporan(){
 
     setBottomNavActive("laporan");
 
+    const saldoEl =
+        document.getElementById("sisaSaldo");
 
-  const saldoEl = document.getElementById("sisaSaldo");
-  const masukEl = document.getElementById("totalMasuk");
-  const keluarEl = document.getElementById("totalKeluar");
-  const listBulanEl = document.getElementById("listBulan");
+    const masukEl =
+        document.getElementById("totalMasuk");
 
-  saldoEl.classList.add("skeleton-text");
-  masukEl.classList.add("skeleton-text");
-  keluarEl.classList.add("skeleton-text");
-  listBulanEl.classList.add("skeleton-card");
+    const keluarEl =
+        document.getElementById("totalKeluar");
 
-  const cache = sessionStorage.getItem("laporan");
+    const listBulanEl =
+        document.getElementById("listBulan");
 
-  if(cache){
 
-    renderLaporan(
-      JSON.parse(cache)
-    );
+    // ================= CACHE =================
 
-    return;
-  }
+    const cache =
+        sessionStorage.getItem("laporan");
 
-  try{
 
-    const hasil = await getLaporan(user.userId);
+    if(cache){
 
-    sessionStorage.setItem(
-      "laporan",
-      JSON.stringify(hasil)
-    );
+        // tampilkan cache langsung
+        renderLaporan(
+            JSON.parse(cache)
+        );
 
-    renderLaporan(hasil);
+    }else{
 
-  }catch(err){
+        // kalau belum ada cache,
+        // tampilkan skeleton
 
-    console.error(err);
-    showToast("Gagal load laporan");
+        saldoEl.classList.add(
+            "skeleton-text"
+        );
 
-  }
+        masukEl.classList.add(
+            "skeleton-text"
+        );
+
+        keluarEl.classList.add(
+            "skeleton-text"
+        );
+
+        listBulanEl.classList.add(
+            "skeleton-card"
+        );
+
+    }
+
+
+    // ================= AMBIL DATA TERBARU =================
+
+    try{
+
+        const hasil =
+            await getLaporan(
+                user.userId
+            );
+
+
+        // simpan data terbaru
+        sessionStorage.setItem(
+            "laporan",
+            JSON.stringify(hasil)
+        );
+
+
+        // render ulang
+        renderLaporan(hasil);
+
+
+    }catch(err){
+
+        console.error(err);
+
+        if(!cache){
+
+            showToast(
+                "Gagal load laporan"
+            );
+
+        }
+
+    }
 
 }
-
 // ================= RENDER KATEGORI =================
 function renderKategori(data){
 
